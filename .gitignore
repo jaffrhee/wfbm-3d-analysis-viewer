@@ -22,3 +22,23 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Build
+build
+
+# Environment
+.env
+.env.*
+
+# Babylon / debug output
+*.babylon
+*.glb
+*.gltf
+
+# Test data
+/test-data/
+/mock-data-large/
+
+# Temporary
+temp/
+tmp/
