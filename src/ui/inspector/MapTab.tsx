@@ -1,4 +1,12 @@
-// src/ui/inspector/MapTab.tsx
 export default function MapTab() {
-  return <div className="map-tab">Map Tab</div>;
+  return (
+  <>
+      <h3>Selected Cell</h3>
+
+      <p>Block</p>
+      <p>Bank</p>
+      <p>Mat</p>
+      <p>Physical Address</p>
+    </>
+  );
 }

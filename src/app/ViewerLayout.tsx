@@ -1,29 +1,50 @@
+import { useEffect, useRef } from "react";
+
 import FloatingToolbar from "../ui/toolbar/FloatingToolbar";
 import MiniMap from "../ui/overlay/MiniMap";
 import CoordinateGizmo from "../ui/overlay/CoordinateGizmo";
 import SliceSlider from "../ui/slice/SliceSlider";
 import MapTab from "../ui/inspector/MapTab";
 
+import { ViewerEngine } from "../viewer/core/ViewerEngine";
+
+import "./ViewerLayout.css";
+
 export default function ViewerLayout() {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const viewerEngine = new ViewerEngine(canvasRef.current);
+    viewerEngine.start();
+
+    return () => {
+      viewerEngine.dispose();
+    };
+  }, []);
+
   return (
     <div className="viewer-root">
+      <div className="viewer-canvas">
+        <canvas ref={canvasRef} className="babylon-canvas" />
+      </div>
 
       <FloatingToolbar />
-
       <MiniMap />
-
-      <div className="viewer-canvas">
-        WFBM 3D VIEW
-      </div>
-
       <SliceSlider />
-
       <CoordinateGizmo />
 
-      <div className="right-panel">
-        <MapTab />
-      </div>
+      <div className="inspector-panel">
+        <div className="tab-header">
+          <button>Map</button>
+          <button>Layer</button>
+        </div>
 
+        <div className="tab-content">
+          <MapTab />
+        </div>
+      </div>
     </div>
   );
 }
