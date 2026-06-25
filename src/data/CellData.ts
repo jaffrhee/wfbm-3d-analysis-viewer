@@ -6,6 +6,12 @@ export interface CellData {
   physicalY: number;
   physicalZ: number;
 
-
   isFail: boolean;
+
+  type?: CellType;
 }
+
+export type CellType =
+| "reference"
+| "fail"
+| "normal";

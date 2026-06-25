@@ -7,18 +7,10 @@ import {
 export class CameraController {
 
   readonly camera: ArcRotateCamera;
-
-  private readonly defaultTarget =
-    new Vector3(0, 0, 0);
-
+  private readonly defaultTarget = new Vector3(0, 0, 0);
   private readonly defaultRadius = 180;
 
-
-  constructor(
-    scene: Scene,
-    canvas: HTMLCanvasElement
-  ) {
-
+  constructor(scene: Scene, canvas: HTMLCanvasElement) {
     this.camera =
       new ArcRotateCamera(
         "mainCamera",
@@ -33,60 +25,35 @@ export class CameraController {
         scene
       );
 
-
     this.camera.attachControl(
       canvas,
       true
     );
 
-
     this.configure();
   }
 
-
   private configure() {
-
     this.camera.lowerRadiusLimit = 1;
-
     this.camera.upperRadiusLimit = 1000;
-
     this.camera.wheelPrecision = 30;
-
     this.camera.panningSensibility = 50;
-
   }
 
-
-  home() {
-
-    this.camera.alpha =
-      -Math.PI / 4;
-
-    this.camera.beta =
-      Math.PI / 3;
-
-    this.camera.radius =
-      this.defaultRadius;
-
-
-    this.camera.setTarget(
-      this.defaultTarget
-    );
-
+  home(target = this.defaultTarget, radius = this.defaultRadius) {
+    this.camera.alpha = -Math.PI / 4;
+    this.camera.beta = Math.PI / 3;
+    this.camera.radius = radius;
+    this.camera.setTarget(target);
   }
 
+  focus(position: Vector3, radius = 20) {
+    this.camera.setTarget(position);
+    this.camera.radius = radius;
+  }
 
-  focus(
-    position: Vector3,
-    radius = 20
-  ) {
-
-    this.camera.setTarget(
-      position
-    );
-
-    this.camera.radius =
-      radius;
-
+  setHomeTarget(target: Vector3, radius: number) {
+    this.camera.setTarget(target);
+    this.camera.radius = radius;
   }
 }
