@@ -19,6 +19,24 @@ export default function ViewerLayout() {
     const viewerEngine = new ViewerEngine(canvasRef.current);
     viewerEngine.start();
 
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "1") {
+        viewerEngine.loadChunk(0, 0);
+      }
+
+      if (e.key === "2") {
+        viewerEngine.loadChunk(1, 0);
+      }
+
+      if (e.key === "3") {
+        viewerEngine.loadChunk(-1, 0);
+      }
+
+      if (e.key === "4") {
+        viewerEngine.loadChunk(0, 1);
+      }
+    });
+
     return () => {
       viewerEngine.dispose();
     };

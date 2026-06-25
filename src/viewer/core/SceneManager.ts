@@ -16,10 +16,14 @@ import { generateMockChunk } from "../../data/MockGenerator";
 
 import { CoordinateMapper, WFBM_SIZE_X, WFBM_SIZE_Y, WFBM_SIZE_Z, } from "./CoordinateMapper";
 
+import type { ChunkCoord } from "../chunk/Chunk";
+
 export class SceneManager {
   readonly scene: Scene;
   private cameraController: CameraController;
   private voxelRenderer: VoxelRenderer;
+
+  private currentChunk: ChunkCoord = { x: 0, y: 0 };
 
   constructor(engine: Engine, canvas: HTMLCanvasElement) {
     this.scene = new Scene(engine);
@@ -39,14 +43,38 @@ export class SceneManager {
     this.voxelRenderer = new VoxelRenderer(this.scene);
     this.voxelRenderer.renderReferenceCell();
 
-    const chunk = generateMockChunk({
+    /*const chunk = generateMockChunk({
       x: 0,
       y: 0
     });
-    this.voxelRenderer.renderFailCells(chunk.failCells);
+    this.voxelRenderer.renderFailCells(chunk.failCells);*/
+
+    this.loadChunk({
+      x: 0,
+      y: 0
+    });
 
     const center = CoordinateMapper.getWorldCenter(WFBM_SIZE_X, WFBM_SIZE_Y, WFBM_SIZE_Z);
     this.cameraController.home(center, 450);
+  }
+
+  loadChunk(
+    coord: ChunkCoord
+  ) {
+
+    this.currentChunk = coord;
+
+    const chunk = generateMockChunk(coord);
+
+    this.voxelRenderer.renderFailCells(chunk.failCells);
+
+    console.log(
+      "Loaded Chunk:",
+      chunk.key,
+      "Fail:",
+      chunk.failCells.length
+    );
+
   }
 
   dispose() {

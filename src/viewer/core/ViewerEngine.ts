@@ -25,6 +25,10 @@ export class ViewerEngine {
     });
   }
 
+  loadChunk(x: number, y: number) {
+    this.sceneManager.loadChunk({ x, y });
+  }
+
   dispose() {
     window.removeEventListener("resize", this.handleResize);
 
