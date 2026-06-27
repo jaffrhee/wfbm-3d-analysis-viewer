@@ -1,7 +1,7 @@
 import { Vector3 } from "@babylonjs/core";
 import type { CellData } from "../../data/CellData";
 
-const CELL_SPACING = 1.2;
+export const CELL_SPACING = 1.2;
 
 export const WFBM_SIZE_X = 64;
 export const WFBM_SIZE_Y = 64;

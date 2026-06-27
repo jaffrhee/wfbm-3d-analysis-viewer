@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import FloatingToolbar from "../ui/toolbar/FloatingToolbar";
 import MiniMap from "../ui/overlay/MiniMap";
 import CoordinateGizmo from "../ui/overlay/CoordinateGizmo";
 import SliceSlider from "../ui/slice/SliceSlider";
 import MapTab from "../ui/inspector/MapTab";
+import type { ChunkCoord } from "../viewer/chunk/Chunk";
 
 import { ViewerEngine } from "../viewer/core/ViewerEngine";
 
@@ -12,11 +13,23 @@ import "./ViewerLayout.css";
 
 export default function ViewerLayout() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [currentChunk, setCurrentChunk] = useState<ChunkCoord>({
+    x: 0,
+    y: 0,
+  });
+
+  const engineRef = useRef<ViewerEngine | null>(null);
+
+  const handleSelectChunk = useCallback((coord: ChunkCoord) => {
+    engineRef.current?.loadChunk(coord.x, coord.y);
+    setCurrentChunk(coord);
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const viewerEngine = new ViewerEngine(canvasRef.current);
+    engineRef.current = viewerEngine;
     viewerEngine.start();
 
     window.addEventListener("keydown", (e) => {
@@ -38,6 +51,7 @@ export default function ViewerLayout() {
     });
 
     return () => {
+      engineRef.current = null;
       viewerEngine.dispose();
     };
   }, []);
@@ -49,7 +63,7 @@ export default function ViewerLayout() {
       </div>
 
       <FloatingToolbar />
-      <MiniMap />
+      <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
       <SliceSlider />
       <CoordinateGizmo />
 

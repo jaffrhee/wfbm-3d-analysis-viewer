@@ -11,7 +11,6 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
 /* Babylon 영역 */
 .viewer-canvas {
   width: 100%;
@@ -19,10 +18,8 @@
   position: relative;
 }
 
-
 /* Floating Toolbar */
 .floating-toolbar {
-
   position: absolute;
 
   top: 20px;
@@ -32,17 +29,15 @@
 
   padding: 10px 18px;
 
-  background: rgba(40,40,40,0.9);
+  background: rgba(40, 40, 40, 0.9);
 
   border-radius: 20px;
 
   z-index: 10;
 }
 
-
 /* Mini Map */
 .mini-map {
-
   position: absolute;
 
   top: 20px;
@@ -51,94 +46,80 @@
   width: 160px;
   height: 160px;
 
-  background: rgba(30,30,30,0.85);
+  background: rgba(30, 30, 30, 0.85);
 
   border: 1px solid #555;
 
   z-index: 10;
 }
 
-
 /* Coordinate */
 .coordinate-gizmo {
-
-  position:absolute;
+  position: absolute;
 
   right: 330px;
   bottom: 20px;
 
-  width:130px;
-  height:130px;
+  width: 130px;
+  height: 130px;
 
-  background:rgba(20,20,20,0.5);
+  background: rgba(20, 20, 20, 0.5);
 
-  border:1px solid #444;
+  border: 1px solid #444;
 
-  z-index:10;
+  z-index: 10;
 }
-
 
 /* Slice */
 .slice-slider {
-
-  position:absolute;
+  position: absolute;
 
   right: 300px;
-  top:100px;
-  bottom:100px;
+  top: 100px;
+  bottom: 100px;
 
-  width:50px;
+  width: 50px;
 
-  background:rgba(30,30,30,0.6);
+  background: rgba(30, 30, 30, 0.6);
 
-  z-index:10;
+  z-index: 10;
 }
-
 
 /* Right Panel */
 .inspector-panel {
+  position: absolute;
 
-  position:absolute;
+  top: 0;
+  right: 0;
 
-  top:0;
-  right:0;
+  width: 280px;
+  height: 100%;
 
-  width:280px;
-  height:100%;
+  background: #202020;
 
-  background:#202020;
+  border-left: 1px solid #444;
 
-  border-left:1px solid #444;
-
-  z-index:20;
+  z-index: 20;
 }
-
 
 .tab-header {
-
-  display:flex;
-
+  display: flex;
 }
-
 
 .tab-header button {
+  flex: 1;
 
-  flex:1;
+  height: 36px;
 
-  height:36px;
+  background: #333;
 
-  background:#333;
+  color: white;
 
-  color:white;
-
-  border:none;
+  border: none;
 }
 
-
 .tab-content {
-
-  padding:15px;
-
+  padding: 15px;
 }
 
 .babylon-canvas {
@@ -146,4 +127,65 @@
   height: 100%;
   display: block;
   outline: none;
+}
+
+.mini-map {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+
+  width: 160px;
+  height: 160px;
+
+  padding: 12px;
+
+  background: rgba(8, 18, 28, 0.86);
+  border: 1px solid rgba(0, 217, 255, 0.45);
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.15);
+
+  z-index: 10;
+}
+
+.mini-map-title {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #8feaff;
+  margin-bottom: 10px;
+}
+
+.mini-map-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 32px);
+  grid-template-rows: repeat(3, 32px);
+  gap: 6px;
+  justify-content: center;
+}
+
+.mini-map-cell {
+  width: 32px;
+  height: 32px;
+
+  background: rgba(10, 30, 45, 0.75);
+  border: 1px solid rgba(0, 217, 255, 0.35);
+
+  color: #00d9ff;
+  cursor: pointer;
+}
+
+.mini-map-cell:hover {
+  border-color: rgba(0, 217, 255, 0.9);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.45);
+}
+
+.mini-map-cell-active {
+  color: #ffd400;
+  border-color: rgba(255, 212, 0, 0.95);
+  box-shadow: 0 0 14px rgba(255, 212, 0, 0.55);
+}
+
+.mini-map-current {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 11px;
+  color: #bdefff;
 }
