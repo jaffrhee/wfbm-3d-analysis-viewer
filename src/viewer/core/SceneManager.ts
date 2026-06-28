@@ -12,7 +12,7 @@ import {
 import { CameraController } from "../camera/CameraController";
 
 import { VoxelRenderer } from "../renderer/VoxelRenderer";
-import { generateMockChunk } from "../../data/MockGenerator";
+//import { generateMockChunk } from "../../data/MockGenerator";
 
 import {
   CoordinateMapper,
@@ -21,10 +21,10 @@ import {
   WFBM_SIZE_Z,
 } from "./CoordinateMapper";
 
-import { BoundaryRenderer } from "../renderer/BoundaryRenderer";
+//import { BoundaryRenderer } from "../renderer/BoundaryRenderer";
 import { ChunkManager } from "../chunk/ChunkManager";
-
 import { ViewerEvents } from "./ViewerEvents";
+import { VoxelGridRenderer } from "../renderer/VoxelGridRenderer";
 
 import type { ChunkCoord } from "../chunk/Chunk";
 
@@ -34,7 +34,8 @@ export class SceneManager {
 
   private cameraController: CameraController;
   private voxelRenderer: VoxelRenderer;
-  private boundaryRenderer: BoundaryRenderer;
+  //private boundaryRenderer: BoundaryRenderer;
+  private voxelGridRenderer: VoxelGridRenderer;
   private chunkManager: ChunkManager;
 
   private currentChunk: ChunkCoord = { x: 0, y: 0 };
@@ -49,8 +50,11 @@ export class SceneManager {
     this.voxelRenderer = new VoxelRenderer(this.scene);
     this.voxelRenderer.renderReferenceCell();
 
-    this.boundaryRenderer = new BoundaryRenderer(this.scene);
-    this.boundaryRenderer.render();
+    //this.boundaryRenderer = new BoundaryRenderer(this.scene);
+    //this.boundaryRenderer.render();
+
+    this.voxelGridRenderer = new VoxelGridRenderer(this.scene);
+    this.voxelGridRenderer.render();
 
     this.events = new ViewerEvents();
     this.chunkManager = new ChunkManager(this.events);
@@ -84,7 +88,8 @@ export class SceneManager {
 
   dispose() {
     this.voxelRenderer.dispose();
-    this.boundaryRenderer.dispose();
+    //this.boundaryRenderer.dispose();
+    this.voxelGridRenderer.dispose();
     this.scene.dispose();
   }
 }
