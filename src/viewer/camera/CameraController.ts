@@ -56,4 +56,8 @@ export class CameraController {
     this.camera.setTarget(target);
     this.camera.radius = radius;
   }
+
+  getCamera() {
+    return this.camera;
+  }
 }

@@ -39,4 +39,8 @@ export class ViewerEngine {
   private handleResize = () => {
     this.engine.resize();
   };
+
+  getCamera() {
+    return this.sceneManager.getCamera();
+  }
 }

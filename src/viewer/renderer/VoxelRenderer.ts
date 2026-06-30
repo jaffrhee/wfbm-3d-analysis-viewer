@@ -70,6 +70,12 @@ export class VoxelRenderer {
 
 		refCell.material = material;
 
+		refCell.enableEdgesRendering();
+
+		refCell.edgesWidth = 2.2;
+
+		refCell.edgesColor.set(1.0, 1.0, 1.0, 1.0);
+
 		// Physical (0,0,0)
 		refCell.position = CoordinateMapper.physicalToWorld({
 			id: "reference",
@@ -102,7 +108,15 @@ export class VoxelRenderer {
 
 		this.failMaterial.diffuseColor = new Color3(1, 0.05, 0.08);
 		this.failMaterial.emissiveColor = new Color3(0.45, 0, 0);
+
 		this.failBaseMesh.material = this.failMaterial;
+
+		// ---------- Edge ----------
+		this.failBaseMesh.enableEdgesRendering();
+
+		this.failBaseMesh.edgesWidth = 2.0;
+
+		this.failBaseMesh.edgesColor.set(1.0, 1.0, 1.0, 0.95);
 	}
 
 	clearFailCells() {

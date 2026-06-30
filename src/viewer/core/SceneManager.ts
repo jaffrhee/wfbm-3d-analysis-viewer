@@ -86,6 +86,10 @@ export class SceneManager {
     console.log("Loaded Chunk:", chunk.key, "Fail:", chunk.failCells.length);
   }
 
+  getCamera() {
+    return this.cameraController.getCamera();
+  }
+
   dispose() {
     this.voxelRenderer.dispose();
     //this.boundaryRenderer.dispose();

@@ -9,6 +9,8 @@ import type { ChunkCoord } from "../viewer/chunk/Chunk";
 
 import { ViewerEngine } from "../viewer/core/ViewerEngine";
 
+import type { ArcRotateCamera } from "@babylonjs/core";
+
 import "./ViewerLayout.css";
 
 export default function ViewerLayout() {
@@ -19,6 +21,7 @@ export default function ViewerLayout() {
   });
 
   const engineRef = useRef<ViewerEngine | null>(null);
+  const [mainCamera, setMainCamera] = useState<ArcRotateCamera | null>(null);
 
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
@@ -30,6 +33,9 @@ export default function ViewerLayout() {
 
     const viewerEngine = new ViewerEngine(canvasRef.current);
     engineRef.current = viewerEngine;
+
+    setMainCamera(viewerEngine.getCamera());
+
     viewerEngine.start();
 
     window.addEventListener("keydown", (e) => {
@@ -65,7 +71,7 @@ export default function ViewerLayout() {
       <FloatingToolbar />
       <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
       <SliceSlider />
-      <CoordinateGizmo />
+      <CoordinateGizmo mainCamera={mainCamera} />
 
       <div className="inspector-panel">
         <div className="tab-header">
