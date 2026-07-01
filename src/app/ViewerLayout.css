@@ -189,3 +189,48 @@
   font-size: 11px;
   color: #bdefff;
 }
+
+.navigation-pad {
+  position: absolute;
+  left: 24px;
+  bottom: 28px;
+
+  display: grid;
+  grid-template-columns: 42px 42px 42px;
+  grid-template-rows: 42px 42px 42px 42px;
+  gap: 8px;
+
+  padding: 12px;
+  border-radius: 16px;
+
+  background: rgba(8, 18, 28, 0.82);
+  border: 1px solid rgba(0, 217, 255, 0.28);
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.12);
+  backdrop-filter: blur(6px);
+
+  z-index: 30;
+  pointer-events: auto;
+}
+
+.navigation-pad button {
+  color: #d8f6ff;
+  background: rgba(20, 42, 58, 0.88);
+  border: 1px solid rgba(140, 220, 255, 0.25);
+  border-radius: 10px;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.navigation-pad button:hover {
+  background: rgba(30, 85, 115, 0.9);
+  border-color: rgba(140, 220, 255, 0.75);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.25);
+}
+
+.navigation-pad .nav-center {
+  color: #ffd400;
+  border-color: rgba(255, 212, 0, 0.6);
+}

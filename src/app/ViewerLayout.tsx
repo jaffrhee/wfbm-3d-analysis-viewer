@@ -11,6 +11,8 @@ import { ViewerEngine } from "../viewer/core/ViewerEngine";
 
 import type { ArcRotateCamera } from "@babylonjs/core";
 
+import NavigationPad from "../ui/overlay/NavigationPad";
+
 import "./ViewerLayout.css";
 
 export default function ViewerLayout() {
@@ -27,6 +29,8 @@ export default function ViewerLayout() {
     engineRef.current?.loadChunk(coord.x, coord.y);
     setCurrentChunk(coord);
   }, []);
+
+  const [showNavigationPad, setShowNavigationPad] = useState(true);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -68,10 +72,35 @@ export default function ViewerLayout() {
         <canvas ref={canvasRef} className="babylon-canvas" />
       </div>
 
-      <FloatingToolbar />
+      {/*<FloatingToolbar />
       <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
       <SliceSlider />
-      <CoordinateGizmo mainCamera={mainCamera} />
+      <CoordinateGizmo mainCamera={mainCamera} />*/}
+
+      <FloatingToolbar
+        showNavigationPad={showNavigationPad}
+        onHome={() => console.log("Home")}
+        onCubeView={() => console.log("Cube View")}
+        onToggleNavigationPad={() => setShowNavigationPad((v) => !v)}
+        onShowConfig={() => console.log("Config")}
+        onToggleDebugPanel={() => console.log("Debug")}
+      />
+
+      {showNavigationPad && (
+        <NavigationPad
+          onForward={() => console.log("forward")}
+          onBackward={() => console.log("backward")}
+          onLeft={() => console.log("left")}
+          onRight={() => console.log("right")}
+          onZoomIn={() => console.log("zoom in")}
+          onZoomOut={() => console.log("zoom out")}
+          onHome={() => console.log("home")}
+        />
+      )}
+
+      <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
+      <SliceSlider />
+      {mainCamera && <CoordinateGizmo mainCamera={mainCamera} />}
 
       <div className="inspector-panel">
         <div className="tab-header">
