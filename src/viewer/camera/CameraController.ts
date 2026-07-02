@@ -9,6 +9,9 @@ export class CameraController {
   readonly camera: ArcRotateCamera;
   private readonly defaultTarget = new Vector3(0, 0, 0);
   private readonly defaultRadius = 180;
+  private readonly rotateStep = 0.12;
+  private readonly zoomFactor = 0.9;
+
 
   constructor(scene: Scene, canvas: HTMLCanvasElement) {
     this.camera =
@@ -59,5 +62,43 @@ export class CameraController {
 
   getCamera() {
     return this.camera;
+  }
+
+  rotateLeft() {
+    this.camera.alpha -= this.rotateStep;
+  }
+
+  rotateRight() {
+    this.camera.alpha += this.rotateStep;
+  }
+
+  rotateUp() {
+    this.camera.beta = Math.max(0.15, this.camera.beta - this.rotateStep);
+  }
+
+  rotateDown() {
+    this.camera.beta = Math.min(Math.PI - 0.15, this.camera.beta + this.rotateStep);
+  }
+
+  zoomIn() {
+    this.camera.radius *= this.zoomFactor;
+  }
+
+  zoomOut() {
+    this.camera.radius /= this.zoomFactor;
+  }
+
+  applyView(alpha: number, beta: number, radius: number) {
+    this.camera.alpha = alpha;
+    this.camera.beta = beta;
+    this.camera.radius = radius;
+  }
+
+  getViewState() {
+    return {
+      alpha: this.camera.alpha,
+      beta: this.camera.beta,
+      radius: this.camera.radius,
+    };
   }
 }

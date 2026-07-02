@@ -5,45 +5,40 @@
     </div>
   );
 }*/
+import "./FloatingToolbar.css";
 
 interface FloatingToolbarProps {
   showNavigationPad: boolean;
+  showDebugPanel?: boolean;
 
   onHome: () => void;
-
-  onCubeView: () => void;
-
   onToggleNavigationPad: () => void;
-
   onShowConfig: () => void;
-
-  onToggleDebugPanel: () => void;
 }
 
 export default function FloatingToolbar({
   showNavigationPad,
   onHome,
-  onCubeView,
   onToggleNavigationPad,
   onShowConfig,
-  onToggleDebugPanel,
 }: FloatingToolbarProps) {
   return (
     <div className="floating-toolbar">
-      <button onClick={onHome}>Home</button>
-
-      <button onClick={onCubeView}>Cube</button>
+      <button onClick={onHome} title="Home">
+        ⌂
+      </button>
 
       <button
         className={showNavigationPad ? "active" : ""}
         onClick={onToggleNavigationPad}
+        title="Navigation Pad"
       >
-        Nav
+        NAV
       </button>
 
-      <button onClick={onShowConfig}>Config</button>
-
-      <button onClick={onToggleDebugPanel}>Debug</button>
+      <button onClick={onShowConfig} title="Config">
+        CFG
+      </button>
     </div>
   );
 }

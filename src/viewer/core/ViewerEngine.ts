@@ -43,4 +43,8 @@ export class ViewerEngine {
   getCamera() {
     return this.sceneManager.getCamera();
   }
+
+  getCameraController() {
+    return this.sceneManager.getCameraController();
+  }
 }

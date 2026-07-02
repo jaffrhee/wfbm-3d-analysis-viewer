@@ -90,6 +90,10 @@ export class SceneManager {
     return this.cameraController.getCamera();
   }
 
+  getCameraController() {
+    return this.cameraController;
+  }
+
   dispose() {
     this.voxelRenderer.dispose();
     //this.boundaryRenderer.dispose();

@@ -5,6 +5,7 @@ import MiniMap from "../ui/overlay/MiniMap";
 import CoordinateGizmo from "../ui/overlay/CoordinateGizmo";
 import SliceSlider from "../ui/slice/SliceSlider";
 import MapTab from "../ui/inspector/MapTab";
+import ConfigDialog from "../ui/config/ConfigDialog";
 import type { ChunkCoord } from "../viewer/chunk/Chunk";
 
 import { ViewerEngine } from "../viewer/core/ViewerEngine";
@@ -24,13 +25,14 @@ export default function ViewerLayout() {
 
   const engineRef = useRef<ViewerEngine | null>(null);
   const [mainCamera, setMainCamera] = useState<ArcRotateCamera | null>(null);
+  const [showNavigationPad, setShowNavigationPad] = useState(true);
+  const [showConfigDialog, setShowConfigDialog] = useState(false);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
 
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
     setCurrentChunk(coord);
   }, []);
-
-  const [showNavigationPad, setShowNavigationPad] = useState(true);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -79,24 +81,52 @@ export default function ViewerLayout() {
 
       <FloatingToolbar
         showNavigationPad={showNavigationPad}
-        onHome={() => console.log("Home")}
-        onCubeView={() => console.log("Cube View")}
+        onHome={() => engineRef.current?.getCameraController().home()}
         onToggleNavigationPad={() => setShowNavigationPad((v) => !v)}
-        onShowConfig={() => console.log("Config")}
-        onToggleDebugPanel={() => console.log("Debug")}
+        onShowConfig={() => setShowConfigDialog(true)}
       />
 
       {showNavigationPad && (
         <NavigationPad
-          onForward={() => console.log("forward")}
-          onBackward={() => console.log("backward")}
-          onLeft={() => console.log("left")}
-          onRight={() => console.log("right")}
-          onZoomIn={() => console.log("zoom in")}
-          onZoomOut={() => console.log("zoom out")}
-          onHome={() => console.log("home")}
+          onForward={() => engineRef.current?.getCameraController().rotateUp()}
+          onBackward={() =>
+            engineRef.current?.getCameraController().rotateDown()
+          }
+          onLeft={() => engineRef.current?.getCameraController().rotateLeft()}
+          onRight={() => engineRef.current?.getCameraController().rotateRight()}
+          onZoomIn={() => engineRef.current?.getCameraController().zoomIn()}
+          onZoomOut={() => engineRef.current?.getCameraController().zoomOut()}
+          onHome={() => engineRef.current?.getCameraController().home()}
         />
       )}
+
+      {showConfigDialog && mainCamera && (
+        <ConfigDialog
+          initialAlpha={mainCamera.alpha}
+          initialBeta={mainCamera.beta}
+          initialRadius={mainCamera.radius}
+          showNavigationPad={showNavigationPad}
+          showDebugPanel={showDebugPanel}
+          onApplyCamera={(alpha, beta, radius) =>
+            engineRef.current
+              ?.getCameraController()
+              .applyView(alpha, beta, radius)
+          }
+          onResetCamera={() => engineRef.current?.getCameraController().home()}
+          onChangeShowNavigationPad={setShowNavigationPad}
+          onChangeShowDebugPanel={setShowDebugPanel}
+          onClose={() => setShowConfigDialog(false)}
+        />
+      )}
+
+      {showConfigDialog && (
+        <div className="config-dialog-temp">
+          <div>Config Dialog</div>
+          <button onClick={() => setShowConfigDialog(false)}>Close</button>
+        </div>
+      )}
+
+      {showDebugPanel && <div className="debug-panel-temp">Debug Panel</div>}
 
       <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
       <SliceSlider />

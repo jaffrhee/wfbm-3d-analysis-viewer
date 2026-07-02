@@ -23,9 +23,10 @@
   position: absolute;
 
   top: 20px;
-  left: 50%;
+  /*left: 50%;*/
+  left: 20px;
 
-  transform: translateX(-50%);
+  /*transform: translateX(-50%);*/
 
   padding: 10px 18px;
 
@@ -57,7 +58,7 @@
 .coordinate-gizmo {
   position: absolute;
 
-  right: 380px;
+  right: 300px;
   bottom: 20px;
 
   width: 180px;
@@ -76,9 +77,11 @@
 
   right: 300px;
   top: 100px;
-  bottom: 100px;
+  /*bottom: 100px;*/
+  height: 600px;
 
-  width: 50px;
+
+  width: 30px;
 
   background: rgba(30, 30, 30, 0.6);
 
@@ -132,7 +135,7 @@
 .mini-map {
   position: absolute;
   top: 20px;
-  left: 20px;
+  left: 120px;
 
   width: 160px;
   height: 160px;
@@ -233,4 +236,37 @@
 .navigation-pad .nav-center {
   color: #ffd400;
   border-color: rgba(255, 212, 0, 0.6);
+}
+
+.config-dialog-temp {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 16px;
+  min-width: 260px;
+
+  background: rgba(20, 28, 38, 0.95);
+  border: 1px solid rgba(140, 220, 255, 0.35);
+  border-radius: 10px;
+  color: white;
+
+  z-index: 60;
+}
+
+.debug-panel-temp {
+  position: absolute;
+  left: 20px;
+  top: 210px;
+
+  padding: 12px;
+  width: 220px;
+
+  background: rgba(20, 28, 38, 0.85);
+  border: 1px solid rgba(140, 220, 255, 0.25);
+  border-radius: 8px;
+  color: #d8f6ff;
+
+  z-index: 50;
 }
