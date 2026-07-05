@@ -59,7 +59,7 @@
   position: absolute;
 
   right: 300px;
-  bottom: 20px;
+  bottom: 30px;
 
   width: 180px;
   height: 180px;
@@ -76,9 +76,9 @@
   position: absolute;
 
   right: 300px;
-  top: 100px;
+  top: 50px;
   /*bottom: 100px;*/
-  height: 600px;
+  height:700px;
 
 
   width: 30px;
@@ -238,7 +238,7 @@
   border-color: rgba(255, 212, 0, 0.6);
 }
 
-.config-dialog-temp {
+/*.config-dialog-temp {
   position: absolute;
   top: 90px;
   left: 50%;
@@ -253,9 +253,9 @@
   color: white;
 
   z-index: 60;
-}
+}*/
 
-.debug-panel-temp {
+.debug-panel {
   position: absolute;
   left: 20px;
   top: 210px;

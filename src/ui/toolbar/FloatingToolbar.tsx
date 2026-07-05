@@ -9,7 +9,7 @@ import "./FloatingToolbar.css";
 
 interface FloatingToolbarProps {
   showNavigationPad: boolean;
-  showDebugPanel?: boolean;
+  //showDebugPanel?: boolean;
 
   onHome: () => void;
   onToggleNavigationPad: () => void;

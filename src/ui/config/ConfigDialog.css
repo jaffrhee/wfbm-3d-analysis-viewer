@@ -1,8 +1,8 @@
 .config-dialog {
     position: absolute;
-    top: 90px;
+    top: 120px;
     /*left: 50%;*/
-    left: 300px;
+    right: 300px;
     /*transform: translateX(-50%);*/
 
     width: 360px;

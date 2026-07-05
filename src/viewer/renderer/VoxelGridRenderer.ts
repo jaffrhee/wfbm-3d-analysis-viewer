@@ -35,7 +35,7 @@ const GRID_LABEL = {
 };
 
 const PLANE_FILL = {
-  alpha: 0.15, //0.4 -> 0.15
+  alpha: 0.4, //0.4 -> 0.15
   sideFaceColor: new Color3(0.0, 0.45, 0.75), // 0.25, 0.25, 0.9  -> 0.0, 0.45, 0.75
   backFaceColor: new Color3(0.25, 0.25, 0.9),  // 0.0, 0.55, 0.9 -> 0.25, 0.25, 0.9
 };

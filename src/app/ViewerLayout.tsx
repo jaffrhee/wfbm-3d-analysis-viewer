@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import FloatingToolbar from "../ui/toolbar/FloatingToolbar";
-import MiniMap from "../ui/overlay/MiniMap";
-import CoordinateGizmo from "../ui/overlay/CoordinateGizmo";
 import SliceSlider from "../ui/slice/SliceSlider";
 import MapTab from "../ui/inspector/MapTab";
 import ConfigDialog from "../ui/config/ConfigDialog";
-import type { ChunkCoord } from "../viewer/chunk/Chunk";
 
+import MiniMap from "../ui/overlay/MiniMap";
+import CoordinateGizmo from "../ui/overlay/CoordinateGizmo";
+import NavigationPad from "../ui/overlay/NavigationPad";
+import DebugPanel from "../ui/overlay/DebugPanel";
+
+import type { ChunkCoord } from "../viewer/chunk/Chunk";
 import { ViewerEngine } from "../viewer/core/ViewerEngine";
+import type { DebugInfo } from "../viewer/debug/DebugManager";
 
 import type { ArcRotateCamera } from "@babylonjs/core";
-
-import NavigationPad from "../ui/overlay/NavigationPad";
 
 import "./ViewerLayout.css";
 
@@ -28,6 +30,10 @@ export default function ViewerLayout() {
   const [showNavigationPad, setShowNavigationPad] = useState(true);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(75);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
+  //const [debugTick, setDebugTick] = useState(0);
+  //const [fps, setFps] = useState(0);
 
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
@@ -41,28 +47,27 @@ export default function ViewerLayout() {
     engineRef.current = viewerEngine;
 
     setMainCamera(viewerEngine.getCamera());
+    setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
 
     viewerEngine.start();
 
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "1") {
-        viewerEngine.loadChunk(0, 0);
-      }
+    const debugTimer = window.setInterval(() => {
+      setDebugInfo(viewerEngine.getDebugInfo());
+    }, 250);
 
-      if (e.key === "2") {
-        viewerEngine.loadChunk(1, 0);
-      }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "1") viewerEngine.loadChunk(0, 0);
+      if (e.key === "2") viewerEngine.loadChunk(1, 0);
+      if (e.key === "3") viewerEngine.loadChunk(-1, 0);
+      if (e.key === "4") viewerEngine.loadChunk(0, 1);
+    };
 
-      if (e.key === "3") {
-        viewerEngine.loadChunk(-1, 0);
-      }
-
-      if (e.key === "4") {
-        viewerEngine.loadChunk(0, 1);
-      }
-    });
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.clearInterval(debugTimer);
+
       engineRef.current = null;
       viewerEngine.dispose();
     };
@@ -105,6 +110,10 @@ export default function ViewerLayout() {
           initialAlpha={mainCamera.alpha}
           initialBeta={mainCamera.beta}
           initialRadius={mainCamera.radius}
+          /*initialMouseWheelSpeed={
+            engineRef.current?.getCameraController().getMouseWheelSpeed() ?? 75
+          }*/
+          initialMouseWheelSpeed={mouseWheelSpeed}
           showNavigationPad={showNavigationPad}
           showDebugPanel={showDebugPanel}
           onApplyCamera={(alpha, beta, radius) =>
@@ -112,21 +121,19 @@ export default function ViewerLayout() {
               ?.getCameraController()
               .applyView(alpha, beta, radius)
           }
-          onResetCamera={() => engineRef.current?.getCameraController().home()}
+          //onResetCamera={() => engineRef.current?.getCameraController().home()}
           onChangeShowNavigationPad={setShowNavigationPad}
           onChangeShowDebugPanel={setShowDebugPanel}
+          onChangeMouseWheelSpeed={(speed) =>
+            engineRef.current?.getCameraController().setMouseWheelSpeed(speed)
+          }
           onClose={() => setShowConfigDialog(false)}
         />
       )}
 
-      {showConfigDialog && (
-        <div className="config-dialog-temp">
-          <div>Config Dialog</div>
-          <button onClick={() => setShowConfigDialog(false)}>Close</button>
-        </div>
+      {showDebugPanel && debugInfo && (
+        <DebugPanel info={debugInfo} />
       )}
-
-      {showDebugPanel && <div className="debug-panel-temp">Debug Panel</div>}
 
       <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
       <SliceSlider />

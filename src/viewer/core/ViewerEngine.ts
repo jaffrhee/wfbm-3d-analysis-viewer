@@ -1,9 +1,11 @@
 import { Engine } from "@babylonjs/core";
 import { SceneManager } from "./SceneManager";
+import { DebugManager } from "../debug/DebugManager";
 
 export class ViewerEngine {
   private readonly engine: Engine;
   private readonly sceneManager: SceneManager;
+  private readonly debugManager: DebugManager;
 
   constructor(canvas: HTMLCanvasElement) {
     this.engine = new Engine(canvas, true, {
@@ -13,6 +15,7 @@ export class ViewerEngine {
     });
 
     this.sceneManager = new SceneManager(this.engine, canvas);
+    this.debugManager = new DebugManager(this.engine, this.sceneManager.getCamera());
 
     window.addEventListener("resize", this.handleResize);
   }
@@ -27,6 +30,10 @@ export class ViewerEngine {
 
   loadChunk(x: number, y: number) {
     this.sceneManager.loadChunk({ x, y });
+  }
+
+  getDebugInfo() {
+    return this.debugManager.getDebugInfo();
   }
 
   dispose() {
@@ -46,5 +53,9 @@ export class ViewerEngine {
 
   getCameraController() {
     return this.sceneManager.getCameraController();
+  }
+
+  getFps() {
+    return this.engine.getFps();
   }
 }

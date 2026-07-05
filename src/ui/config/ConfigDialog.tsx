@@ -5,15 +5,17 @@ interface ConfigDialogProps {
   initialAlpha: number;
   initialBeta: number;
   initialRadius: number;
+  initialMouseWheelSpeed: number;
 
   showNavigationPad: boolean;
   showDebugPanel: boolean;
 
   onApplyCamera: (alpha: number, beta: number, radius: number) => void;
-  onResetCamera: () => void;
+  //onResetCamera: () => void;
 
   onChangeShowNavigationPad: (value: boolean) => void;
   onChangeShowDebugPanel: (value: boolean) => void;
+  onChangeMouseWheelSpeed: (speed: number) => void;
 
   onClose: () => void;
 }
@@ -22,17 +24,19 @@ export default function ConfigDialog({
   initialAlpha,
   initialBeta,
   initialRadius,
+  initialMouseWheelSpeed,
   showNavigationPad,
   showDebugPanel,
   onApplyCamera,
-  onResetCamera,
   onChangeShowNavigationPad,
   onChangeShowDebugPanel,
+  onChangeMouseWheelSpeed,
   onClose,
 }: ConfigDialogProps) {
   const [alpha, setAlpha] = useState(initialAlpha);
   const [beta, setBeta] = useState(initialBeta);
   const [radius, setRadius] = useState(initialRadius);
+  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(initialMouseWheelSpeed);
 
   return (
     <div className="config-dialog">
@@ -97,6 +101,21 @@ export default function ConfigDialog({
               setRadius(value);
 
               onApplyCamera(alpha, beta, value);
+            }}
+          />
+        </label>
+        <label>
+          Mouse Wheel Speed: {mouseWheelSpeed}
+          <input
+            type="range"
+            min={1}
+            max={150}
+            step={1}
+            value={mouseWheelSpeed}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setMouseWheelSpeed(value);
+              onChangeMouseWheelSpeed(value);
             }}
           />
         </label>
