@@ -46,6 +46,9 @@ export class VoxelGridRenderer {
   private readonly meshes: Mesh[] = [];
   private readonly labelTexture: AdvancedDynamicTexture;
 
+  private backFaceMaterial: StandardMaterial | null = null;
+  private sideFaceMaterial: StandardMaterial | null = null;
+
   constructor(scene: Scene) {
     this.scene = scene;
     this.root = new TransformNode("voxelGridRoot", scene);
@@ -86,30 +89,27 @@ export class VoxelGridRenderer {
     maxY: number,
     maxZ: number,
   ) {
-    // Babylon Y face = XZ plane = floor
-    this.createFilledPlane(
-      "voxelGridYFacePlane",
+    const backFacePlane = this.createFilledPlane(
+      "voxelGridBackFacePlane",
       maxX,
-      maxY, /*maxZ,*/
-      //new Vector3(maxX / 2, -0.02, maxZ / 2),
+      maxY,
       new Vector3(maxX / 2, maxY / 2, maxZ + 0.02),
-      //"yFace",
       "backFace",
-      //PLANE_FILL.yFaceColor,
       PLANE_FILL.backFaceColor,
     );
 
-    // Babylon X face = YZ plane = left side wall
-    this.createFilledPlane(
-      "voxelGridXFacePlane",
+    this.backFaceMaterial = backFacePlane.material as StandardMaterial;
+
+    const sideFacePlane = this.createFilledPlane(
+      "voxelGridSideFacePlane",
       maxZ,
       maxY,
       new Vector3(-0.02, maxY / 2, maxZ / 2),
-      //"xFace",
       "sideFace",
-      //PLANE_FILL.xFaceColor,
       PLANE_FILL.sideFaceColor,
     );
+
+    this.sideFaceMaterial = sideFacePlane.material as StandardMaterial;
   }
 
   private createFilledPlane(
@@ -153,6 +153,8 @@ export class VoxelGridRenderer {
     plane.isPickable = false;
 
     this.meshes.push(plane);
+
+    return plane;
   }
 
   private createFloorGrid(
@@ -397,6 +399,32 @@ export class VoxelGridRenderer {
     label.billboardMode = Mesh.BILLBOARDMODE_ALL;
 
     this.meshes.push(label);
+  }
+
+  setBackFaceColor(color: string) {
+    if (!this.backFaceMaterial) return;
+
+    const nextColor = Color3.FromHexString(color);
+    this.backFaceMaterial.diffuseColor = nextColor;
+    this.backFaceMaterial.emissiveColor = nextColor;
+  }
+
+  setSideFaceColor(color: string) {
+    if (!this.sideFaceMaterial) return;
+
+    const nextColor = Color3.FromHexString(color);
+    this.sideFaceMaterial.diffuseColor = nextColor;
+    this.sideFaceMaterial.emissiveColor = nextColor;
+  }
+
+  setPlaneAlpha(alpha: number) {
+    if (this.backFaceMaterial) {
+      this.backFaceMaterial.alpha = alpha;
+    }
+
+    if (this.sideFaceMaterial) {
+      this.sideFaceMaterial.alpha = alpha;
+    }
   }
 
   clear() {

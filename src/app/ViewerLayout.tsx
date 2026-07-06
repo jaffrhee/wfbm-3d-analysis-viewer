@@ -30,10 +30,14 @@ export default function ViewerLayout() {
   const [showNavigationPad, setShowNavigationPad] = useState(true);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [showCoordinateGizmo, setShowCoordinateGizmo] = useState(true);
+
+  const [backFaceColor, setBackFaceColor] = useState("#0073bf");
+  const [sideFaceColor, setSideFaceColor] = useState("#4040e6");
+  const [planeAlpha, setPlaneAlpha] = useState(0.4);
+
   const [mouseWheelSpeed, setMouseWheelSpeed] = useState(75);
   const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
-  //const [debugTick, setDebugTick] = useState(0);
-  //const [fps, setFps] = useState(0);
 
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
@@ -114,8 +118,12 @@ export default function ViewerLayout() {
             engineRef.current?.getCameraController().getMouseWheelSpeed() ?? 75
           }*/
           initialMouseWheelSpeed={mouseWheelSpeed}
+          backFaceColor={backFaceColor}
+          sideFaceColor={sideFaceColor}
+          planeAlpha={planeAlpha}
           showNavigationPad={showNavigationPad}
           showDebugPanel={showDebugPanel}
+          showCoordinateGizmo={showCoordinateGizmo}
           onApplyCamera={(alpha, beta, radius) =>
             engineRef.current
               ?.getCameraController()
@@ -127,17 +135,30 @@ export default function ViewerLayout() {
           onChangeMouseWheelSpeed={(speed) =>
             engineRef.current?.getCameraController().setMouseWheelSpeed(speed)
           }
+          onChangeShowCoordinateGizmo={setShowCoordinateGizmo}
+          onChangeBackFaceColor={(color) => {
+            setBackFaceColor(color);
+            engineRef.current?.setBackFaceColor(color);
+          }}
+          onChangeSideFaceColor={(color) => {
+            setSideFaceColor(color);
+            engineRef.current?.setSideFaceColor(color);
+          }}
+          onChangePlaneAlpha={(alpha) => {
+            setPlaneAlpha(alpha);
+            engineRef.current?.setPlaneAlpha(alpha);
+          }}
           onClose={() => setShowConfigDialog(false)}
         />
       )}
 
-      {showDebugPanel && debugInfo && (
-        <DebugPanel info={debugInfo} />
-      )}
+      {showDebugPanel && debugInfo && <DebugPanel info={debugInfo} />}
 
       <MiniMap currentChunk={currentChunk} onSelectChunk={handleSelectChunk} />
       <SliceSlider />
-      {mainCamera && <CoordinateGizmo mainCamera={mainCamera} />}
+      {showCoordinateGizmo && mainCamera && (
+        <CoordinateGizmo mainCamera={mainCamera} />
+      )}
 
       <div className="inspector-panel">
         <div className="tab-header">

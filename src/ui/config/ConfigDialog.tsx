@@ -7,8 +7,13 @@ interface ConfigDialogProps {
   initialRadius: number;
   initialMouseWheelSpeed: number;
 
+  backFaceColor: string;
+  sideFaceColor: string;
+  planeAlpha: number;
+
   showNavigationPad: boolean;
   showDebugPanel: boolean;
+  showCoordinateGizmo: boolean;
 
   onApplyCamera: (alpha: number, beta: number, radius: number) => void;
   //onResetCamera: () => void;
@@ -16,6 +21,11 @@ interface ConfigDialogProps {
   onChangeShowNavigationPad: (value: boolean) => void;
   onChangeShowDebugPanel: (value: boolean) => void;
   onChangeMouseWheelSpeed: (speed: number) => void;
+  onChangeShowCoordinateGizmo: (value: boolean) => void;
+
+  onChangeBackFaceColor: (color: string) => void;
+  onChangeSideFaceColor: (color: string) => void;
+  onChangePlaneAlpha: (alpha: number) => void;
 
   onClose: () => void;
 }
@@ -25,18 +35,29 @@ export default function ConfigDialog({
   initialBeta,
   initialRadius,
   initialMouseWheelSpeed,
+  backFaceColor,
+  sideFaceColor,
+  planeAlpha,
   showNavigationPad,
   showDebugPanel,
+  showCoordinateGizmo,
+
   onApplyCamera,
   onChangeShowNavigationPad,
   onChangeShowDebugPanel,
   onChangeMouseWheelSpeed,
+  onChangeShowCoordinateGizmo,
+  onChangeBackFaceColor,
+  onChangeSideFaceColor,
+  onChangePlaneAlpha,
   onClose,
 }: ConfigDialogProps) {
   const [alpha, setAlpha] = useState(initialAlpha);
   const [beta, setBeta] = useState(initialBeta);
   const [radius, setRadius] = useState(initialRadius);
-  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(initialMouseWheelSpeed);
+  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
+    initialMouseWheelSpeed,
+  );
 
   return (
     <div className="config-dialog">
@@ -123,7 +144,36 @@ export default function ConfigDialog({
 
       <section className="config-group">
         <h3>Rendering</h3>
-        <div className="config-placeholder">Plane Fill Color / Alpha later</div>
+
+        <label className="config-color-row">
+          <span>Back Face Color</span>
+          <input
+            type="color"
+            value={backFaceColor}
+            onChange={(e) => onChangeBackFaceColor(e.target.value)}
+          />
+        </label>
+
+        <label className="config-color-row">
+          <span>Side Face Color</span>
+          <input
+            type="color"
+            value={sideFaceColor}
+            onChange={(e) => onChangeSideFaceColor(e.target.value)}
+          />
+        </label>
+
+        <label>
+          Plane Alpha: {planeAlpha.toFixed(2)}
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={planeAlpha}
+            onChange={(e) => onChangePlaneAlpha(Number(e.target.value))}
+          />
+        </label>
       </section>
 
       <section className="config-group">
@@ -145,6 +195,15 @@ export default function ConfigDialog({
             onChange={(e) => onChangeShowDebugPanel(e.target.checked)}
           />
           Show Debug Panel
+        </label>
+
+        <label className="config-check">
+          <input
+            type="checkbox"
+            checked={showCoordinateGizmo}
+            onChange={(e) => onChangeShowCoordinateGizmo(e.target.checked)}
+          />
+          Show Coordinate Gizmo
         </label>
       </section>
     </div>

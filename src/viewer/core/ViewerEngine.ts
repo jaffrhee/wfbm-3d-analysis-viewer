@@ -58,4 +58,16 @@ export class ViewerEngine {
   getFps() {
     return this.engine.getFps();
   }
+
+  setBackFaceColor(color: string) {
+    this.sceneManager.setBackFaceColor(color);
+  }
+
+  setSideFaceColor(color: string) {
+    this.sceneManager.setSideFaceColor(color);
+  }
+
+  setPlaneAlpha(alpha: number) {
+    this.sceneManager.setPlaneAlpha(alpha);
+  }
 }

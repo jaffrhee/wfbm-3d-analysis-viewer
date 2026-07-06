@@ -86,3 +86,22 @@
     color: #9fb7c5;
     font-size: 12px;
 }
+
+.config-color-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.config-color-row input[type="color"] {
+    width: 44px;
+    height: 28px;
+    padding: 0;
+
+    border: 1px solid rgba(140, 220, 255, 0.35);
+    border-radius: 6px;
+
+    background: transparent;
+    cursor: pointer;
+}

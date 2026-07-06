@@ -94,6 +94,18 @@ export class SceneManager {
     return this.cameraController;
   }
 
+  setBackFaceColor(color: string) {
+    this.voxelGridRenderer.setBackFaceColor(color);
+  }
+
+  setSideFaceColor(color: string) {
+    this.voxelGridRenderer.setSideFaceColor(color);
+  }
+
+  setPlaneAlpha(alpha: number) {
+    this.voxelGridRenderer.setPlaneAlpha(alpha);
+  }
+
   dispose() {
     this.voxelRenderer.dispose();
     //this.boundaryRenderer.dispose();
