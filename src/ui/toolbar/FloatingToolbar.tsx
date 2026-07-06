@@ -1,5 +1,9 @@
 import "./FloatingToolbar.css";
 
+import homeIcon from "../icons/home.svg";
+import navigationIcon from "../icons/navigation.svg";
+import configIcon from "../icons/config.svg";
+
 interface FloatingToolbarProps {
   showNavigationPad: boolean;
 
@@ -8,7 +12,7 @@ interface FloatingToolbarProps {
   onShowConfig: () => void;
 }
 
-const iconProps = {
+/*const iconProps = {
   className: "floating-toolbar-icon",
   viewBox: "0 0 24 24",
   fill: "none",
@@ -16,7 +20,7 @@ const iconProps = {
   strokeWidth: 2,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
-};
+};*/
 
 export default function FloatingToolbar({
   showNavigationPad,
@@ -25,7 +29,7 @@ export default function FloatingToolbar({
   onShowConfig,
 }: FloatingToolbarProps) {
   return (
-    <div className="floating-toolbar">
+    /*<div className="floating-toolbar">
       <button onClick={onHome} title="Home">
         <svg {...iconProps}>
           <path d="M3 10.5L12 3l9 7.5" />
@@ -54,6 +58,38 @@ export default function FloatingToolbar({
           <circle cx="12" cy="12" r="3" />
           <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.1 2.1-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V20h-3v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-2.1-2.1.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H4v-3h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.1-2.1.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V4h3v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.1 2.1-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2v3h-.2a1.7 1.7 0 0 0-1.5 1z" />
         </svg>
+      </button>
+    </div>*/
+    <div className="floating-toolbar">
+      <button onClick={onHome} title="Home">
+        <img
+          className="floating-toolbar-icon"
+          src={homeIcon}
+          alt="Home"
+          draggable={false}
+        />
+      </button>
+
+      <button
+        className={showNavigationPad ? "active" : ""}
+        onClick={onToggleNavigationPad}
+        title="Navigation Pad"
+      >
+        <img
+          className="floating-toolbar-icon"
+          src={navigationIcon}
+          alt="Navigation Pad"
+          draggable={false}
+        />
+      </button>
+
+      <button onClick={onShowConfig} title="Config">
+        <img
+          className="floating-toolbar-icon"
+          src={configIcon}
+          alt="Config"
+          draggable={false}
+        />
       </button>
     </div>
   );

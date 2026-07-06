@@ -26,6 +26,12 @@
     width: 48px;
     height: 48px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
     border: 1px solid rgba(180, 220, 255, 0.20);
     border-radius: 8px;
 
@@ -62,8 +68,29 @@
     color: white;
 }
 
-.floating-toolbar-icon {
+/*.floating-toolbar-icon {
     width: 22px;
     height: 22px;
     display: block;
+}*/
+
+.floating-toolbar-icon {
+    width: 28px;
+    height: 28px;
+    display: block;
+
+    /*ilter: brightness(0) saturate(100%) invert(94%) sepia(9%) saturate(950%) hue-rotate(168deg) brightness(105%) contrast(103%);*/
+    filter: none;
+    opacity: 1;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+.floating-toolbar button:hover .floating-toolbar-icon {
+    transform: scale(1.08);
+}
+
+.floating-toolbar button.active .floating-toolbar-icon {
+    transform: scale(1.12);
 }

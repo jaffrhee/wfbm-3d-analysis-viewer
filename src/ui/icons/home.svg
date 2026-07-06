@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- offset shadow layer -->
+  <path d="M4 11.7L12.5 4.2L21 11.7V21.2H4V11.7Z" fill="#1B1B1F"/>
+  <!-- main shape -->
+  <g transform="translate(-0.6,-0.6)">
+    <path d="M3.5 11.2L12 3.5L20.5 11.2V20.7H3.5V11.2Z" fill="#FF6B4A" stroke="#1B1B1F" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M9.2 20.7V14.6H14.8V20.7" fill="#6C5CE7" stroke="#1B1B1F" stroke-width="1.6" stroke-linejoin="round"/>
+    <rect x="6.2" y="12.3" width="2.1" height="2.1" rx="0.3" fill="#FFD166" stroke="#1B1B1F" stroke-width="1"/>
+    <!-- signature spark -->
+    <path d="M18.6 4.6L19.2 5.9L20.5 6.5L19.2 7.1L18.6 8.4L18 7.1L16.7 6.5L18 5.9Z" fill="#FFD166" stroke="#1B1B1F" stroke-width="0.8" stroke-linejoin="round"/>
+  </g>
+</svg>
