@@ -20,24 +20,22 @@ import "./ViewerLayout.css";
 
 export default function ViewerLayout() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [currentChunk, setCurrentChunk] = useState<ChunkCoord>({
-    x: 0,
-    y: 0,
-  });
-
   const engineRef = useRef<ViewerEngine | null>(null);
+
+  const [currentChunk, setCurrentChunk] = useState<ChunkCoord>({ x: 0, y: 0 });
   const [mainCamera, setMainCamera] = useState<ArcRotateCamera | null>(null);
-  const [showNavigationPad, setShowNavigationPad] = useState(true);
-  const [showConfigDialog, setShowConfigDialog] = useState(false);
+
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [showNavigationPad, setShowNavigationPad] = useState(true);
+  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(75);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
+
+  const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [showCoordinateGizmo, setShowCoordinateGizmo] = useState(true);
 
   const [backFaceColor, setBackFaceColor] = useState("#0073bf");
   const [sideFaceColor, setSideFaceColor] = useState("#4040e6");
   const [planeAlpha, setPlaneAlpha] = useState(0.4);
-
-  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(75);
-  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
 
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
@@ -97,12 +95,24 @@ export default function ViewerLayout() {
 
       {showNavigationPad && (
         <NavigationPad
-          onForward={() => engineRef.current?.getCameraController().rotateUp()}
+          /*onForward={() => engineRef.current?.getCameraController().rotateUp()}
           onBackward={() =>
             engineRef.current?.getCameraController().rotateDown()
           }
           onLeft={() => engineRef.current?.getCameraController().rotateLeft()}
           onRight={() => engineRef.current?.getCameraController().rotateRight()}
+          onZoomIn={() => engineRef.current?.getCameraController().zoomIn()}
+          onZoomOut={() => engineRef.current?.getCameraController().zoomOut()}
+          onHome={() => engineRef.current?.getCameraController().home()}
+        />*/
+          onForward={() =>
+            engineRef.current?.getCameraController().panForward()
+          }
+          onBackward={() =>
+            engineRef.current?.getCameraController().panBackward()
+          }
+          onLeft={() => engineRef.current?.getCameraController().panLeft()}
+          onRight={() => engineRef.current?.getCameraController().panRight()}
           onZoomIn={() => engineRef.current?.getCameraController().zoomIn()}
           onZoomOut={() => engineRef.current?.getCameraController().zoomOut()}
           onHome={() => engineRef.current?.getCameraController().home()}

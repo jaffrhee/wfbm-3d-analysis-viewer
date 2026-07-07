@@ -1,9 +1,10 @@
 .config-dialog {
     position: absolute;
-    top: 120px;
-    /*left: 50%;*/
-    right: 300px;
-    /*transform: translateX(-50%);*/
+
+    /*top: 120px;
+    right: 300px;*/
+
+    margin: 0;
 
     width: 360px;
     padding: 14px;
@@ -18,6 +19,10 @@
 }
 
 .config-header {
+    cursor: move;
+
+    user-select: none;
+
     display: flex;
     justify-content: space-between;
     align-items: center;

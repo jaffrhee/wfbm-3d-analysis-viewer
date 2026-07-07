@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./ConfigDialog.css";
 
 interface ConfigDialogProps {
@@ -59,9 +59,51 @@ export default function ConfigDialog({
     initialMouseWheelSpeed,
   );
 
+  const [position, setPosition] = useState({ x: 120, y: 80 });
+  const draggingRef = useRef(false);
+  const offsetRef = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    draggingRef.current = true;
+
+    offsetRef.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    };
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!draggingRef.current) return;
+
+      setPosition({
+        x: e.clientX - offsetRef.current.x,
+        y: e.clientY - offsetRef.current.y,
+      });
+    };
+
+    const handleMouseUp = () => {
+      draggingRef.current = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
   return (
-    <div className="config-dialog">
-      <div className="config-header">
+    <div
+      className="config-dialog"
+      style={{
+        left: position.x,
+        top: position.y,
+      }}
+    >
+      <div className="config-header" onMouseDown={handleMouseDown}>
         <span>Configuration</span>
         <button onClick={onClose}>×</button>
       </div>

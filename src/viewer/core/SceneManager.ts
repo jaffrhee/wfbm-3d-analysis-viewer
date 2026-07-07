@@ -72,7 +72,7 @@ export class SceneManager {
       WFBM_SIZE_Y,
       WFBM_SIZE_Z,
     );
-    this.cameraController.home(center, 450);
+    this.cameraController.home(center);
   }
 
   loadChunk(coord: ChunkCoord) {
