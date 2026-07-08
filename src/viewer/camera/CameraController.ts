@@ -1,15 +1,21 @@
 import { ArcRotateCamera, Scene, Vector3 } from "@babylonjs/core";
 
 export class CameraController {
+
   readonly camera: ArcRotateCamera;
-  private readonly defaultTarget = new Vector3(0, 0, 0);
-  private readonly defaultRadius = 180;
+
+  //private readonly defaultTarget = new Vector3(0, 0, 0);
+  //private readonly defaultRadius = 180;
+
   private readonly rotateStep = 0.12;
   private readonly zoomFactor = 0.9;
-  private readonly defaultWheelPrecision = 30;
+
+  private readonly defaultWheelSpeed = 100;
+  private readonly defaultWheelPrecision = 105 - this.defaultWheelSpeed; // 30 -> 105 - this.defaultWheelSpeed; 
   private readonly minWheelPrecision = 0.2;
   private readonly maxWheelPrecision = 100;
-  private readonly panStep = 6;
+
+  private readonly panStep = 2;   //6 -> 2
 
   private homeTarget = new Vector3(0, 0, 0);
 
@@ -144,8 +150,9 @@ export class CameraController {
   }
 
   private panTarget(dx: number, dy: number, dz: number) {
-    const nextTarget = this.camera.target.add(new Vector3(dx, dy, dz));
-    this.camera.setTarget(nextTarget);
+    //const nextTarget = this.camera.target.add(new Vector3(dx, dy, dz));
+    this.camera.target.add(new Vector3(dx, dy, dz));
+    //this.camera.setTarget(nextTarget);
   }
 
   applyView(alpha: number, beta: number, radius: number) {
@@ -187,5 +194,17 @@ export class CameraController {
       (this.maxWheelPrecision - this.minWheelPrecision);
 
     return Math.round(1 + t * (150 - 1));
+  }
+
+  applyTarget(x: number, y: number, z: number) {
+    this.camera.target.set(x, y, z);
+  }
+
+  getTargetState() {
+    return {
+      x: this.camera.target.x,
+      y: this.camera.target.y,
+      z: this.camera.target.z,
+    };
   }
 }

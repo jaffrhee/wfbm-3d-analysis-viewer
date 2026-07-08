@@ -15,34 +15,34 @@ export default function DebugPanel({ info }: DebugPanelProps) {
       <div className="debug-title">DEBUG</div>
 
       <div className="debug-row">
-        <span>FPS</span>
+        <span>FPS (Frame Per Sec.)</span>
         <strong>{info.fps.toFixed(1)}</strong>
       </div>
 
       <div className="debug-section">Camera</div>
 
       <div className="debug-row">
-        <span>Alpha</span>
+        <span>Alpha (수평 회전각)</span>
         <strong>{info.alpha.toFixed(3)}</strong>
       </div>
 
       <div className="debug-row">
-        <span>Beta</span>
+        <span>Beta (수직 회전각)</span>
         <strong>{info.beta.toFixed(3)}</strong>
       </div>
 
       <div className="debug-row">
-        <span>Radius</span>
+        <span>Radius (거리)</span>
         <strong>{info.radius.toFixed(1)}</strong>
       </div>
 
       <div className="debug-row debug-wide">
-        <span>Position</span>
+        <span>Position (카메라 위치)</span>
         <strong>{formatVec(info.position)}</strong>
       </div>
 
       <div className="debug-row debug-wide">
-        <span>Target</span>
+        <span>Target (목표지점 위치)</span>
         <strong>{formatVec(info.target)}</strong>
       </div>
     </div>

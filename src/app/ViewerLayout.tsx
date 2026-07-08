@@ -124,6 +124,9 @@ export default function ViewerLayout() {
           initialAlpha={mainCamera.alpha}
           initialBeta={mainCamera.beta}
           initialRadius={mainCamera.radius}
+          initialTargetX={mainCamera.target.x}
+          initialTargetY={mainCamera.target.y}
+          initialTargetZ={mainCamera.target.z}
           /*initialMouseWheelSpeed={
             engineRef.current?.getCameraController().getMouseWheelSpeed() ?? 75
           }*/
@@ -158,6 +161,9 @@ export default function ViewerLayout() {
             setPlaneAlpha(alpha);
             engineRef.current?.setPlaneAlpha(alpha);
           }}
+          onApplyTarget={(x, y, z) =>
+            engineRef.current?.getCameraController().applyTarget(x, y, z)
+          }
           onClose={() => setShowConfigDialog(false)}
         />
       )}

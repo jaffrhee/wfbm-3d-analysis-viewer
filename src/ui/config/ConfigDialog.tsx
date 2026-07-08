@@ -15,6 +15,11 @@ interface ConfigDialogProps {
   showDebugPanel: boolean;
   showCoordinateGizmo: boolean;
 
+  //Target SliderBar 추가
+  initialTargetX: number;
+  initialTargetY: number;
+  initialTargetZ: number;
+
   onApplyCamera: (alpha: number, beta: number, radius: number) => void;
   //onResetCamera: () => void;
 
@@ -26,6 +31,8 @@ interface ConfigDialogProps {
   onChangeBackFaceColor: (color: string) => void;
   onChangeSideFaceColor: (color: string) => void;
   onChangePlaneAlpha: (alpha: number) => void;
+
+  onApplyTarget: (x: number, y: number, z: number) => void; //Target SliderBar 추가
 
   onClose: () => void;
 }
@@ -41,6 +48,9 @@ export default function ConfigDialog({
   showNavigationPad,
   showDebugPanel,
   showCoordinateGizmo,
+  initialTargetX,
+  initialTargetY,
+  initialTargetZ,
 
   onApplyCamera,
   onChangeShowNavigationPad,
@@ -50,11 +60,15 @@ export default function ConfigDialog({
   onChangeBackFaceColor,
   onChangeSideFaceColor,
   onChangePlaneAlpha,
+  onApplyTarget,
   onClose,
 }: ConfigDialogProps) {
   const [alpha, setAlpha] = useState(initialAlpha);
   const [beta, setBeta] = useState(initialBeta);
   const [radius, setRadius] = useState(initialRadius);
+  const [targetX, setTargetX] = useState(initialTargetX);
+  const [targetY, setTargetY] = useState(initialTargetY);
+  const [targetZ, setTargetZ] = useState(initialTargetZ);
   const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
     initialMouseWheelSpeed,
   );
@@ -167,6 +181,55 @@ export default function ConfigDialog({
             }}
           />
         </label>
+
+        <label>
+          Target X: {targetX.toFixed(1)}
+          <input
+            type="range"
+            min={-200}
+            max={400}
+            step={1}
+            value={targetX}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setTargetX(value);
+              onApplyTarget(value, targetY, targetZ);
+            }}
+          />
+        </label>
+
+        <label>
+          Target Y: {targetY.toFixed(1)}
+          <input
+            type="range"
+            min={-100}
+            max={500}
+            step={1}
+            value={targetY}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setTargetY(value);
+              onApplyTarget(targetX, value, targetZ);
+            }}
+          />
+        </label>
+
+        <label>
+          Target Z: {targetZ.toFixed(1)}
+          <input
+            type="range"
+            min={-200}
+            max={400}
+            step={1}
+            value={targetZ}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              setTargetZ(value);
+              onApplyTarget(targetX, targetY, value);
+            }}
+          />
+        </label>
+
         <label>
           Mouse Wheel Speed: {mouseWheelSpeed}
           <input

@@ -1,7 +1,7 @@
 .debug-panel {
   position: absolute;
 
-  width: 220px;
+  width: 260px;
   padding: 12px;
 
   background: rgba(8, 18, 28, 0.86);
@@ -10,7 +10,7 @@
   box-shadow: 0 0 18px rgba(0, 217, 255, 0.12);
 
   color: #d8f6ff;
-  font-size: 12px;
+  font-size: 16px;
 
   z-index: 35;
   pointer-events: auto;
@@ -20,7 +20,7 @@
   margin-bottom: 10px;
 
   color: #8feaff;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: 1.5px;
 }
