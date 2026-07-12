@@ -13,6 +13,7 @@ import DebugPanel from "../ui/overlay/DebugPanel";
 import type { ChunkCoord } from "../viewer/chunk/Chunk";
 import { ViewerEngine } from "../viewer/core/ViewerEngine";
 import type { DebugInfo } from "../viewer/debug/DebugManager";
+import type { CameraState } from "../viewer/camera/CameraController";
 
 import type { ArcRotateCamera } from "@babylonjs/core";
 
@@ -27,8 +28,9 @@ export default function ViewerLayout() {
 
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [showNavigationPad, setShowNavigationPad] = useState(true);
-  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(75);
+  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(148);
   const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
+  const [cameraState, setCameraState] = useState<CameraState | null>(null);
 
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [showCoordinateGizmo, setShowCoordinateGizmo] = useState(true);
@@ -51,10 +53,14 @@ export default function ViewerLayout() {
     setMainCamera(viewerEngine.getCamera());
     setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
 
+    setCameraState(viewerEngine.getCameraController().getCameraState());
+
     viewerEngine.start();
 
     const debugTimer = window.setInterval(() => {
       setDebugInfo(viewerEngine.getDebugInfo());
+
+      setCameraState(viewerEngine.getCameraController().getCameraState());
     }, 250);
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -119,17 +125,9 @@ export default function ViewerLayout() {
         />
       )}
 
-      {showConfigDialog && mainCamera && (
+      {showConfigDialog && cameraState && (
         <ConfigDialog
-          initialAlpha={mainCamera.alpha}
-          initialBeta={mainCamera.beta}
-          initialRadius={mainCamera.radius}
-          initialTargetX={mainCamera.target.x}
-          initialTargetY={mainCamera.target.y}
-          initialTargetZ={mainCamera.target.z}
-          /*initialMouseWheelSpeed={
-            engineRef.current?.getCameraController().getMouseWheelSpeed() ?? 75
-          }*/
+          cameraState={cameraState}
           initialMouseWheelSpeed={mouseWheelSpeed}
           backFaceColor={backFaceColor}
           sideFaceColor={sideFaceColor}
@@ -142,12 +140,19 @@ export default function ViewerLayout() {
               ?.getCameraController()
               .applyView(alpha, beta, radius)
           }
-          //onResetCamera={() => engineRef.current?.getCameraController().home()}
+          onApplyPosition={(x, y, z) =>
+            engineRef.current?.getCameraController().applyPosition(x, y, z)
+          }
+          onApplyTarget={(x, y, z) =>
+            engineRef.current?.getCameraController().applyTarget(x, y, z)
+          }
           onChangeShowNavigationPad={setShowNavigationPad}
           onChangeShowDebugPanel={setShowDebugPanel}
-          onChangeMouseWheelSpeed={(speed) =>
-            engineRef.current?.getCameraController().setMouseWheelSpeed(speed)
-          }
+          onChangeMouseWheelSpeed={(speed) => {
+            setMouseWheelSpeed(speed);
+
+            engineRef.current?.getCameraController().setMouseWheelSpeed(speed);
+          }}
           onChangeShowCoordinateGizmo={setShowCoordinateGizmo}
           onChangeBackFaceColor={(color) => {
             setBackFaceColor(color);
@@ -161,9 +166,6 @@ export default function ViewerLayout() {
             setPlaneAlpha(alpha);
             engineRef.current?.setPlaneAlpha(alpha);
           }}
-          onApplyTarget={(x, y, z) =>
-            engineRef.current?.getCameraController().applyTarget(x, y, z)
-          }
           onClose={() => setShowConfigDialog(false)}
         />
       )}

@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import "./ConfigDialog.css";
+import type { CameraState } from "../../viewer/camera/CameraController";
 
 interface ConfigDialogProps {
-  initialAlpha: number;
-  initialBeta: number;
-  initialRadius: number;
+  cameraState: CameraState;
+
   initialMouseWheelSpeed: number;
 
   backFaceColor: string;
@@ -14,11 +14,6 @@ interface ConfigDialogProps {
   showNavigationPad: boolean;
   showDebugPanel: boolean;
   showCoordinateGizmo: boolean;
-
-  //Target SliderBar 추가
-  initialTargetX: number;
-  initialTargetY: number;
-  initialTargetZ: number;
 
   onApplyCamera: (alpha: number, beta: number, radius: number) => void;
   //onResetCamera: () => void;
@@ -33,14 +28,13 @@ interface ConfigDialogProps {
   onChangePlaneAlpha: (alpha: number) => void;
 
   onApplyTarget: (x: number, y: number, z: number) => void; //Target SliderBar 추가
+  onApplyPosition: (x: number, y: number, z: number) => void; //Position SliderBar 추가
 
   onClose: () => void;
 }
 
 export default function ConfigDialog({
-  initialAlpha,
-  initialBeta,
-  initialRadius,
+  cameraState,
   initialMouseWheelSpeed,
   backFaceColor,
   sideFaceColor,
@@ -48,9 +42,6 @@ export default function ConfigDialog({
   showNavigationPad,
   showDebugPanel,
   showCoordinateGizmo,
-  initialTargetX,
-  initialTargetY,
-  initialTargetZ,
 
   onApplyCamera,
   onChangeShowNavigationPad,
@@ -61,19 +52,29 @@ export default function ConfigDialog({
   onChangeSideFaceColor,
   onChangePlaneAlpha,
   onApplyTarget,
+  onApplyPosition,
   onClose,
 }: ConfigDialogProps) {
-  const [alpha, setAlpha] = useState(initialAlpha);
-  const [beta, setBeta] = useState(initialBeta);
-  const [radius, setRadius] = useState(initialRadius);
-  const [targetX, setTargetX] = useState(initialTargetX);
-  const [targetY, setTargetY] = useState(initialTargetY);
-  const [targetZ, setTargetZ] = useState(initialTargetZ);
+  /*const [alpha, setAlpha] = useState(cameraState.alpha);
+  const [beta, setBeta] = useState(cameraState.beta);
+  const [radius, setRadius] = useState(cameraState.radius);
+  const [cameraPositionX, setCameraPositionX] = useState(cameraState.position.x,
+  );
+  const [cameraPositionY, setCameraPositionY] = useState(
+    cameraState.position.y,
+  );
+  const [cameraPositionZ, setCameraPositionZ] = useState(
+    cameraState.position.z,
+  );
+
+  const [targetX, setTargetX] = useState(cameraState.target.x);
+  const [targetY, setTargetY] = useState(cameraState.target.y);
+  const [targetZ, setTargetZ] = useState(cameraState.target.z);*/
   const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
     initialMouseWheelSpeed,
   );
 
-  const [position, setPosition] = useState({ x: 120, y: 80 });
+  const [dialogPosition, setDialogPosition] = useState({ x: 120, y: 80 });
   const draggingRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
 
@@ -81,8 +82,8 @@ export default function ConfigDialog({
     draggingRef.current = true;
 
     offsetRef.current = {
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
+      x: e.clientX - dialogPosition.x,
+      y: e.clientY - dialogPosition.y,
     };
   };
 
@@ -90,7 +91,7 @@ export default function ConfigDialog({
     const handleMouseMove = (e: MouseEvent) => {
       if (!draggingRef.current) return;
 
-      setPosition({
+      setDialogPosition({
         x: e.clientX - offsetRef.current.x,
         y: e.clientY - offsetRef.current.y,
       });
@@ -113,8 +114,8 @@ export default function ConfigDialog({
     <div
       className="config-dialog"
       style={{
-        left: position.x,
-        top: position.y,
+        left: dialogPosition.x,
+        top: dialogPosition.y,
       }}
     >
       <div className="config-header" onMouseDown={handleMouseDown}>
@@ -126,106 +127,156 @@ export default function ConfigDialog({
         <h3>Camera</h3>
 
         <label>
-          Alpha: {alpha.toFixed(2)}
+          Alpha: {cameraState.alpha.toFixed(2)}
           <input
             type="range"
             min={-3.14}
             max={3.14}
             step={0.01}
-            value={alpha}
+            value={cameraState.alpha}
             //onChange={(e) => setAlpha(Number(e.target.value))}
             onChange={(e) => {
               const value = Number(e.target.value);
 
-              setAlpha(value);
-
-              onApplyCamera(value, beta, radius);
+              onApplyCamera(value, cameraState.beta, cameraState.radius);
             }}
           />
         </label>
 
         <label>
-          Beta: {beta.toFixed(2)}
+          Beta: {cameraState.beta.toFixed(2)}
           <input
             type="range"
             min={0.15}
-            max={3.0}
+            max={3.13}
             step={0.01}
-            value={beta}
+            value={cameraState.beta}
             //onChange={(e) => setBeta(Number(e.target.value))}
             onChange={(e) => {
               const value = Number(e.target.value);
 
-              setBeta(value);
-
-              onApplyCamera(alpha, value, radius);
+              onApplyCamera(cameraState.alpha, value, cameraState.radius);
             }}
           />
         </label>
 
         <label>
-          Zoom / Radius: {radius.toFixed(0)}
+          Zoom / Radius: {cameraState.radius.toFixed(0)}
           <input
             type="range"
-            min={50}
-            max={600}
-            step={5}
-            value={radius}
+            min={0.1}
+            max={2000}
+            step={1}
+            value={cameraState.radius}
             //            onChange={(e) => setRadius(Number(e.target.value))}
             onChange={(e) => {
               const value = Number(e.target.value);
 
-              setRadius(value);
+              //setRadius(value);
 
-              onApplyCamera(alpha, beta, value);
+              onApplyCamera(cameraState.alpha, cameraState.beta, value);
             }}
           />
         </label>
 
         <label>
-          Target X: {targetX.toFixed(1)}
+          Position X: {cameraState.position.x.toFixed(1)}
           <input
             type="range"
-            min={-200}
-            max={400}
+            min={-2000}
+            max={2000}
             step={1}
-            value={targetX}
+            value={cameraState.position.x}
             onChange={(e) => {
               const value = Number(e.target.value);
-              setTargetX(value);
-              onApplyTarget(value, targetY, targetZ);
+
+              //setCameraPositionX(value);
+
+              onApplyPosition(value, cameraState.position.y, cameraState.position.z);
             }}
           />
         </label>
 
         <label>
-          Target Y: {targetY.toFixed(1)}
+          Position Y: {cameraState.position.y.toFixed(1)}
+          <input
+            type="range"
+            min={-2000}
+            max={2000}
+            step={1}
+            value={cameraState.position.y}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              //setCameraPositionY(value);
+
+              onApplyPosition(cameraState.position.x, value, cameraState.position.z);
+            }}
+          />
+        </label>
+
+        <label>
+          Position Z: {cameraState.position.z.toFixed(1)}
+          <input
+            type="range"
+            min={-2000}
+            max={2000}
+            step={1}
+            value={cameraState.position.z}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              //setCameraPositionZ(value);
+
+              onApplyPosition(cameraState.position.x, cameraState.position.y, value);
+            }}
+          />
+        </label>
+
+        <label>
+          Target X: {cameraState.target.x.toFixed(1)}
+          <input
+            type="range"
+            min={-1000}
+            max={1000}
+            step={1}
+            value={cameraState.target.x}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              //setTargetX(value);
+              onApplyTarget(value, cameraState.target.y, cameraState.target.z);
+            }}
+          />
+        </label>
+
+        <label>
+          Target Y: {cameraState.target.y.toFixed(1)}
           <input
             type="range"
             min={-100}
-            max={500}
+            max={1000}
             step={1}
-            value={targetY}
+            value={cameraState.target.y}
             onChange={(e) => {
               const value = Number(e.target.value);
-              setTargetY(value);
-              onApplyTarget(targetX, value, targetZ);
+              //setTargetY(value);
+              onApplyTarget(cameraState.target.x, value, cameraState.target.z);
             }}
           />
         </label>
 
         <label>
-          Target Z: {targetZ.toFixed(1)}
+          Target Z: {cameraState.target.z.toFixed(1)}
           <input
             type="range"
-            min={-200}
-            max={400}
+            min={-1000}
+            max={1000}
             step={1}
-            value={targetZ}
+            value={cameraState.target.z}
             onChange={(e) => {
               const value = Number(e.target.value);
-              setTargetZ(value);
-              onApplyTarget(targetX, targetY, value);
+              //setTargetZ(value);
+              onApplyTarget(cameraState.target.x, cameraState.target.y, value);
             }}
           />
         </label>
@@ -235,7 +286,7 @@ export default function ConfigDialog({
           <input
             type="range"
             min={1}
-            max={150}
+            max={200}
             step={1}
             value={mouseWheelSpeed}
             onChange={(e) => {
