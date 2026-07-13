@@ -44,6 +44,16 @@ export default function ViewerLayout() {
     setCurrentChunk(coord);
   }, []);
 
+  const refreshCameraState = useCallback(() => {
+    const cameraController = engineRef.current?.getCameraController();
+
+    if (!cameraController) {
+      return;
+    }
+
+    setCameraState(cameraController.getCameraState());
+  }, []);
+
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -59,9 +69,11 @@ export default function ViewerLayout() {
 
     const debugTimer = window.setInterval(() => {
       setDebugInfo(viewerEngine.getDebugInfo());
-
-      setCameraState(viewerEngine.getCameraController().getCameraState());
     }, 250);
+
+    const cameraStateTimer = window.setInterval(() => {
+      setCameraState(viewerEngine.getCameraController().getCameraState());
+    }, 50);
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "1") viewerEngine.loadChunk(0, 0);
@@ -75,6 +87,7 @@ export default function ViewerLayout() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.clearInterval(debugTimer);
+      window.clearInterval(cameraStateTimer);
 
       engineRef.current = null;
       viewerEngine.dispose();
@@ -135,17 +148,47 @@ export default function ViewerLayout() {
           showNavigationPad={showNavigationPad}
           showDebugPanel={showDebugPanel}
           showCoordinateGizmo={showCoordinateGizmo}
-          onApplyCamera={(alpha, beta, radius) =>
+          /*onApplyCamera={(alpha, beta, radius) =>
             engineRef.current
               ?.getCameraController()
               .applyView(alpha, beta, radius)
-          }
-          onApplyPosition={(x, y, z) =>
+          }*/
+          onApplyCamera={(alpha, beta, radius) => {
+            const cameraController = engineRef.current?.getCameraController();
+
+            if (!cameraController) {
+              return;
+            }
+
+            cameraController.applyView(alpha, beta, radius);
+            refreshCameraState();
+          }}
+          /*onApplyPosition={(x, y, z) =>
             engineRef.current?.getCameraController().applyPosition(x, y, z)
-          }
-          onApplyTarget={(x, y, z) =>
+          }*/
+          onApplyPosition={(x, y, z) => {
+            const cameraController = engineRef.current?.getCameraController();
+
+            if (!cameraController) {
+              return;
+            }
+
+            cameraController.applyPosition(x, y, z);
+            refreshCameraState();
+          }}
+          /*onApplyTarget={(x, y, z) =>
             engineRef.current?.getCameraController().applyTarget(x, y, z)
-          }
+          }*/
+          onApplyTarget={(x, y, z) => {
+            const cameraController = engineRef.current?.getCameraController();
+
+            if (!cameraController) {
+              return;
+            }
+
+            cameraController.applyTarget(x, y, z);
+            refreshCameraState();
+          }}
           onChangeShowNavigationPad={setShowNavigationPad}
           onChangeShowDebugPanel={setShowDebugPanel}
           onChangeMouseWheelSpeed={(speed) => {
