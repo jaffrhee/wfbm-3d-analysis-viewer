@@ -82,6 +82,11 @@ export default function ViewerLayout() {
       if (e.key === "2") viewerEngine.loadChunk(1, 0);
       if (e.key === "3") viewerEngine.loadChunk(-1, 0);
       if (e.key === "4") viewerEngine.loadChunk(0, 1);
+      if (e.key.toLowerCase() === "f") {
+        const radius = viewerEngine.autoFitCamera();
+
+        console.log("Auto Fit Radius:", radius);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);

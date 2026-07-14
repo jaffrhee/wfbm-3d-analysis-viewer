@@ -115,6 +115,129 @@ export class CameraController {
   }
 
   /**
+ * 현재 alpha / beta를 유지한 채,
+ * 지정된 3D 범위가 현재 Canvas 안에 들어오도록
+ * Target과 Radius를 계산한다.
+ */
+  autoFit(
+    center: Vector3,
+    size: Vector3,
+    padding = 1.08,
+  ) {
+    const engine = this.camera.getEngine();
+
+    const renderWidth = Math.max(1, engine.getRenderWidth());
+    const renderHeight = Math.max(1, engine.getRenderHeight());
+    const aspectRatio = renderWidth / renderHeight;
+
+    // Auto Fit의 기준 Target
+    this.camera.setTarget(center);
+
+    /*
+     * 현재 alpha / beta 방향에서 Camera의
+     * forward / right / up 축을 계산하기 위해
+     * 임시 radius를 적용한다.
+     */
+    this.camera.radius = 1;
+    this.camera.getViewMatrix(true);
+
+    const cameraPosition = this.camera.position.clone();
+
+    const forward = center
+      .subtract(cameraPosition)
+      .normalize();
+
+    const right = Vector3.Cross(
+      forward,
+      this.camera.upVector,
+    ).normalize();
+
+    const up = Vector3.Cross(
+      right,
+      forward,
+    ).normalize();
+
+    /*
+     * Babylon camera.fov는 수직 FOV다.
+     * Canvas aspect ratio를 사용해 수평 FOV를 계산한다.
+     */
+    const halfVerticalFov = this.camera.fov * 0.5;
+
+    const halfHorizontalFov = Math.atan(
+      Math.tan(halfVerticalFov) * aspectRatio,
+    );
+
+    const tanHalfVerticalFov = Math.tan(halfVerticalFov);
+    const tanHalfHorizontalFov = Math.tan(halfHorizontalFov);
+
+    const halfSize = size.scale(0.5);
+
+    let requiredRadius = 0;
+
+    /*
+     * Bounding Box의 8개 꼭짓점을 현재 Camera 축으로 투영해
+     * 가로·세로 화면 안에 모두 들어오는 최소 Radius를 계산한다.
+     */
+    for (const xSign of [-1, 1]) {
+      for (const ySign of [-1, 1]) {
+        for (const zSign of [-1, 1]) {
+          const offset = new Vector3(
+            halfSize.x * xSign,
+            halfSize.y * ySign,
+            halfSize.z * zSign,
+          );
+
+          const horizontal = Math.abs(
+            Vector3.Dot(offset, right),
+          );
+
+          const vertical = Math.abs(
+            Vector3.Dot(offset, up),
+          );
+
+          const depthOffset = Vector3.Dot(
+            offset,
+            forward,
+          );
+
+          const horizontalRadius =
+            horizontal / tanHalfHorizontalFov - depthOffset;
+
+          const verticalRadius =
+            vertical / tanHalfVerticalFov - depthOffset;
+
+          requiredRadius = Math.max(
+            requiredRadius,
+            horizontalRadius,
+            verticalRadius,
+          );
+        }
+      }
+    }
+
+    const fittedRadius = Math.max(
+      this.camera.lowerRadiusLimit ?? 0.1,
+      requiredRadius * padding,
+    );
+
+    /*
+     * 계산 결과가 기존 upperRadiusLimit보다 크면
+     * Auto Fit 자체가 제한되지 않도록 상한도 확장한다.
+     */
+    if (
+      this.camera.upperRadiusLimit !== null &&
+      fittedRadius > this.camera.upperRadiusLimit
+    ) {
+      this.camera.upperRadiusLimit = fittedRadius * 1.2;
+    }
+
+    this.camera.radius = fittedRadius;
+    this.camera.getViewMatrix(true);
+
+    return fittedRadius;
+  }
+
+  /**
    * 기존 호출부 호환을 위해 유지한다.
    * 현재 Camera의 Target과 Radius를 즉시 변경한다.
    */

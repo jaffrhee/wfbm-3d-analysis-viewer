@@ -24,8 +24,8 @@ export default function NavigationPad({
   onZoomOut,
   mouseWheelSpeed,
   onWheelSpeedChange,
-  showCameraGuide,
-  onToggleCameraGuide,
+  //showCameraGuide,
+  //onToggleCameraGuide,
 }: NavigationPadProps) {
   return (
     <div className="navigation-pad">

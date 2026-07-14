@@ -118,6 +118,25 @@ export class SceneManager {
     this.cameraGuideRenderer.setVisible(visible);
   }
 
+  autoFitCamera() {
+    const center = CoordinateMapper.getWorldCenter(
+      WFBM_SIZE_X,
+      WFBM_SIZE_Y,
+      WFBM_SIZE_Z,
+    );
+
+    const size = new Vector3(
+      WFBM_SIZE_X,
+      WFBM_SIZE_Y,
+      WFBM_SIZE_Z,
+    );
+
+    return this.cameraController.autoFit(
+      center,
+      size,
+    );
+  }
+
   dispose() {
     this.cameraGuideRenderer.dispose();
     this.voxelRenderer.dispose();

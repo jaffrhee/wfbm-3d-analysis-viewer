@@ -71,6 +71,10 @@ export class ViewerEngine {
     this.sceneManager.setPlaneAlpha(alpha);
   }
 
+  autoFitCamera() {
+    return this.sceneManager.autoFitCamera();
+  }
+
   setCameraGuideVisible(visible: boolean) {
     this.sceneManager.setCameraGuideVisible(visible);
   }
