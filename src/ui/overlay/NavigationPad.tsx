@@ -7,7 +7,12 @@ interface NavigationPadProps {
   onRight: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
-  onHome: () => void;
+
+  mouseWheelSpeed: number;
+  onWheelSpeedChange: (speed: number) => void;
+
+  showCameraGuide: boolean;
+  onToggleCameraGuide: (value: boolean) => void;
 }
 
 export default function NavigationPad({
@@ -17,7 +22,10 @@ export default function NavigationPad({
   onRight,
   onZoomIn,
   onZoomOut,
-  onHome,
+  mouseWheelSpeed,
+  onWheelSpeedChange,
+  showCameraGuide,
+  onToggleCameraGuide,
 }: NavigationPadProps) {
   return (
     <div className="navigation-pad">
@@ -43,9 +51,29 @@ export default function NavigationPad({
         －
       </button>
 
-      <button className="nav-btn nav-home" onClick={onHome}>
-        ⌂
-      </button>
+      <div className="nav-wheel">
+        <div className="nav-wheel-label">Wheel Speed</div>
+
+        <div className="nav-wheel-value">{mouseWheelSpeed}</div>
+
+        <input
+          type="range"
+          min={1}
+          max={200}
+          step={1}
+          value={mouseWheelSpeed}
+          onChange={(e) => onWheelSpeedChange(Number(e.target.value))}
+        />
+      </div>
+
+      <label className="nav-guide">
+        <input
+          type="checkbox"
+          checked={showCameraGuide}
+          onChange={(e) => onToggleCameraGuide(e.target.checked)}
+        />
+        Camera Guide
+      </label>
     </div>
   );
 }

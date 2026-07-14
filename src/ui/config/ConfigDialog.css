@@ -110,3 +110,38 @@
     background: transparent;
     cursor: pointer;
 }
+
+.config-slider {
+
+    margin-bottom: 8px;
+}
+
+.config-slider-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 4px;
+}
+
+.config-number {
+
+    width: 90px;
+
+    padding: 2px 6px;
+
+    text-align: right;
+
+    background: #1d2a36;
+
+    color: #e8f8ff;
+
+    border: 1px solid rgba(140, 220, 255, 0.35);
+
+    border-radius: 4px;
+
+    font-size: 12px;
+}

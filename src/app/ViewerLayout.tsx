@@ -28,6 +28,8 @@ export default function ViewerLayout() {
 
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [showNavigationPad, setShowNavigationPad] = useState(true);
+  const [showCameraGuide, setShowCameraGuide] = useState(false);
+
   const [mouseWheelSpeed, setMouseWheelSpeed] = useState(148);
   const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
   const [cameraState, setCameraState] = useState<CameraState | null>(null);
@@ -114,16 +116,6 @@ export default function ViewerLayout() {
 
       {showNavigationPad && (
         <NavigationPad
-          /*onForward={() => engineRef.current?.getCameraController().rotateUp()}
-          onBackward={() =>
-            engineRef.current?.getCameraController().rotateDown()
-          }
-          onLeft={() => engineRef.current?.getCameraController().rotateLeft()}
-          onRight={() => engineRef.current?.getCameraController().rotateRight()}
-          onZoomIn={() => engineRef.current?.getCameraController().zoomIn()}
-          onZoomOut={() => engineRef.current?.getCameraController().zoomOut()}
-          onHome={() => engineRef.current?.getCameraController().home()}
-        />*/
           onForward={() =>
             engineRef.current?.getCameraController().panForward()
           }
@@ -134,7 +126,14 @@ export default function ViewerLayout() {
           onRight={() => engineRef.current?.getCameraController().panRight()}
           onZoomIn={() => engineRef.current?.getCameraController().zoomIn()}
           onZoomOut={() => engineRef.current?.getCameraController().zoomOut()}
-          onHome={() => engineRef.current?.getCameraController().home()}
+          mouseWheelSpeed={mouseWheelSpeed}
+          onWheelSpeedChange={(speed) => {
+            setMouseWheelSpeed(speed);
+
+            engineRef.current?.getCameraController().setMouseWheelSpeed(speed);
+          }}
+          showCameraGuide={showCameraGuide}
+          onToggleCameraGuide={setShowCameraGuide}
         />
       )}
 

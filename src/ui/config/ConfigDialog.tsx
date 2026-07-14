@@ -55,26 +55,11 @@ export default function ConfigDialog({
   onApplyPosition,
   onClose,
 }: ConfigDialogProps) {
-  /*const [alpha, setAlpha] = useState(cameraState.alpha);
-  const [beta, setBeta] = useState(cameraState.beta);
-  const [radius, setRadius] = useState(cameraState.radius);
-  const [cameraPositionX, setCameraPositionX] = useState(cameraState.position.x,
-  );
-  const [cameraPositionY, setCameraPositionY] = useState(
-    cameraState.position.y,
-  );
-  const [cameraPositionZ, setCameraPositionZ] = useState(
-    cameraState.position.z,
-  );
-
-  const [targetX, setTargetX] = useState(cameraState.target.x);
-  const [targetY, setTargetY] = useState(cameraState.target.y);
-  const [targetZ, setTargetZ] = useState(cameraState.target.z);*/
   const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
     initialMouseWheelSpeed,
   );
 
-  const [dialogPosition, setDialogPosition] = useState({ x: 120, y: 80 });
+  const [dialogPosition, setDialogPosition] = useState({ x: 1260, y: 40 });
   const draggingRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
 
@@ -110,6 +95,10 @@ export default function ConfigDialog({
     };
   }, []);
 
+  useEffect(() => {
+    setMouseWheelSpeed(initialMouseWheelSpeed);
+  }, [initialMouseWheelSpeed]);
+
   return (
     <div
       className="config-dialog"
@@ -126,7 +115,7 @@ export default function ConfigDialog({
       <section className="config-group">
         <h3>Camera</h3>
 
-        <label>
+        {/*<label>
           Alpha: {cameraState.alpha.toFixed(2)}
           <input
             type="range"
@@ -141,9 +130,40 @@ export default function ConfigDialog({
               onApplyCamera(value, cameraState.beta, cameraState.radius);
             }}
           />
-        </label>
+        </label>*/}
 
-        <label>
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Alpha</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={0.01}
+              value={cameraState.alpha.toFixed(3)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyCamera(value, cameraState.beta, cameraState.radius);
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-3.14}
+            max={3.14}
+            step={0.01}
+            value={cameraState.alpha}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyCamera(value, cameraState.beta, cameraState.radius);
+            }}
+          />
+        </div>
+
+        {/*<label>
           Beta: {cameraState.beta.toFixed(2)}
           <input
             type="range"
@@ -158,9 +178,40 @@ export default function ConfigDialog({
               onApplyCamera(cameraState.alpha, value, cameraState.radius);
             }}
           />
-        </label>
+        </label>*/}
 
-        <label>
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Beta</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={0.01}
+              value={cameraState.beta.toFixed(3)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyCamera(cameraState.alpha, value, cameraState.radius);
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={0.15}
+            max={3.13}
+            step={0.01}
+            value={cameraState.beta}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyCamera(cameraState.alpha, value, cameraState.radius);
+            }}
+          />
+        </div>
+
+        {/*<label>
           Zoom / Radius: {cameraState.radius.toFixed(0)}
           <input
             type="range"
@@ -177,9 +228,40 @@ export default function ConfigDialog({
               onApplyCamera(cameraState.alpha, cameraState.beta, value);
             }}
           />
-        </label>
+        </label>*/}
 
-        <label>
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Zoom / Radius</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={0.01}
+              value={cameraState.radius.toFixed(3)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyCamera(cameraState.alpha, cameraState.beta, value);
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={0.1}
+            max={2000}
+            step={1}
+            value={cameraState.radius}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyCamera(cameraState.alpha, cameraState.beta, value);
+            }}
+          />
+        </div>
+
+        {/*<label>
           Position X: {cameraState.position.x.toFixed(1)}
           <input
             type="range"
@@ -192,7 +274,11 @@ export default function ConfigDialog({
 
               //setCameraPositionX(value);
 
-              onApplyPosition(value, cameraState.position.y, cameraState.position.z);
+              onApplyPosition(
+                value,
+                cameraState.position.y,
+                cameraState.position.z,
+              );
             }}
           />
         </label>
@@ -210,7 +296,11 @@ export default function ConfigDialog({
 
               //setCameraPositionY(value);
 
-              onApplyPosition(cameraState.position.x, value, cameraState.position.z);
+              onApplyPosition(
+                cameraState.position.x,
+                value,
+                cameraState.position.z,
+              );
             }}
           />
         </label>
@@ -228,12 +318,133 @@ export default function ConfigDialog({
 
               //setCameraPositionZ(value);
 
-              onApplyPosition(cameraState.position.x, cameraState.position.y, value);
+              onApplyPosition(
+                cameraState.position.x,
+                cameraState.position.y,
+                value,
+              );
             }}
           />
-        </label>
+        </label>*/}
 
-        <label>
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Position X</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={cameraState.position.x.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyPosition(
+                  value,
+                  cameraState.position.y,
+                  cameraState.position.z,
+                );
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-2000}
+            max={2000}
+            step={1}
+            value={cameraState.position.x}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyPosition(
+                value,
+                cameraState.position.y,
+                cameraState.position.z,
+              );
+            }}
+          />
+        </div>
+
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Position Y</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={cameraState.position.y.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyPosition(
+                  cameraState.position.x,
+                  value,
+                  cameraState.position.z,
+                );
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-2000}
+            max={2000}
+            step={1}
+            value={cameraState.position.y}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyPosition(
+                cameraState.position.x,
+                value,
+                cameraState.position.z,
+              );
+            }}
+          />
+        </div>
+
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Position Z</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={cameraState.position.z.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyPosition(
+                  cameraState.position.x,
+                  cameraState.position.y,
+                  value,
+                );
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-2000}
+            max={2000}
+            step={1}
+            value={cameraState.position.z}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyPosition(
+                cameraState.position.x,
+                cameraState.position.y,
+                value,
+              );
+            }}
+          />
+        </div>
+
+        {/*<label>
           Target X: {cameraState.target.x.toFixed(1)}
           <input
             type="range"
@@ -279,9 +490,114 @@ export default function ConfigDialog({
               onApplyTarget(cameraState.target.x, cameraState.target.y, value);
             }}
           />
-        </label>
+        </label>*/}
 
-        <label>
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Target X</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={cameraState.target.x.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyTarget(
+                  value,
+                  cameraState.target.y,
+                  cameraState.target.z,
+                );
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-1000}
+            max={1000}
+            step={1}
+            value={cameraState.target.x}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyTarget(value, cameraState.target.y, cameraState.target.z);
+            }}
+          />
+        </div>
+
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Target Y</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={cameraState.target.y.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyTarget(
+                  cameraState.target.x,
+                  value,
+                  cameraState.target.z,
+                );
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-100}
+            max={1000}
+            step={1}
+            value={cameraState.target.y}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyTarget(cameraState.target.x, value, cameraState.target.z);
+            }}
+          />
+        </div>
+
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Target Z</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={cameraState.target.z.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                onApplyTarget(
+                  cameraState.target.x,
+                  cameraState.target.y,
+                  value,
+                );
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={-1000}
+            max={1000}
+            step={1}
+            value={cameraState.target.z}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              onApplyTarget(cameraState.target.x, cameraState.target.y, value);
+            }}
+          />
+        </div>
+
+        {/*<label>
           Mouse Wheel Speed: {mouseWheelSpeed}
           <input
             type="range"
@@ -295,7 +611,42 @@ export default function ConfigDialog({
               onChangeMouseWheelSpeed(value);
             }}
           />
-        </label>
+        </label>*/}
+
+        <div className="config-slider">
+          <div className="config-slider-header">
+            <span>Mouse Wheel Speed</span>
+
+            <input
+              className="config-number"
+              type="number"
+              step={1}
+              value={mouseWheelSpeed.toFixed(1)}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                //onApplyCamera(cameraState.alpha, value, cameraState.radius);
+                setMouseWheelSpeed(value);
+                onChangeMouseWheelSpeed(value);
+              }}
+            />
+          </div>
+
+          <input
+            type="range"
+            min={1}
+            max={200}
+            step={1}
+            value={mouseWheelSpeed}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+
+              //onApplyCamera(cameraState.alpha, value, cameraState.radius);
+              setMouseWheelSpeed(value);
+              onChangeMouseWheelSpeed(value);
+            }}
+          />
+        </div>
       </section>
 
       <section className="config-group">
