@@ -70,4 +70,8 @@ export class ViewerEngine {
   setPlaneAlpha(alpha: number) {
     this.sceneManager.setPlaneAlpha(alpha);
   }
+
+  setCameraGuideVisible(visible: boolean) {
+    this.sceneManager.setCameraGuideVisible(visible);
+  }
 }

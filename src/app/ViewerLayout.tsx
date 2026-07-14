@@ -133,7 +133,10 @@ export default function ViewerLayout() {
             engineRef.current?.getCameraController().setMouseWheelSpeed(speed);
           }}
           showCameraGuide={showCameraGuide}
-          onToggleCameraGuide={setShowCameraGuide}
+          onToggleCameraGuide={(visible) => {
+            setShowCameraGuide(visible);
+            engineRef.current?.setCameraGuideVisible(visible);
+          }}
         />
       )}
 
@@ -162,9 +165,6 @@ export default function ViewerLayout() {
             cameraController.applyView(alpha, beta, radius);
             refreshCameraState();
           }}
-          /*onApplyPosition={(x, y, z) =>
-            engineRef.current?.getCameraController().applyPosition(x, y, z)
-          }*/
           onApplyPosition={(x, y, z) => {
             const cameraController = engineRef.current?.getCameraController();
 
@@ -175,9 +175,6 @@ export default function ViewerLayout() {
             cameraController.applyPosition(x, y, z);
             refreshCameraState();
           }}
-          /*onApplyTarget={(x, y, z) =>
-            engineRef.current?.getCameraController().applyTarget(x, y, z)
-          }*/
           onApplyTarget={(x, y, z) => {
             const cameraController = engineRef.current?.getCameraController();
 

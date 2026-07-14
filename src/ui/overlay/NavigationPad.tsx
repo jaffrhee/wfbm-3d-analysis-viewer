@@ -66,14 +66,14 @@ export default function NavigationPad({
         />
       </div>
 
-      <label className="nav-guide">
+      {/*<label className="nav-guide">
         <input
           type="checkbox"
           checked={showCameraGuide}
           onChange={(e) => onToggleCameraGuide(e.target.checked)}
         />
         Camera Guide
-      </label>
+      </label>*/}
     </div>
   );
 }

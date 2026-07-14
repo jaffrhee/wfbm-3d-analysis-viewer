@@ -26,6 +26,8 @@ import { ChunkManager } from "../chunk/ChunkManager";
 import { ViewerEvents } from "./ViewerEvents";
 import { VoxelGridRenderer } from "../renderer/VoxelGridRenderer";
 
+import { CameraGuideRenderer } from "../debug/CameraGuideRenderer";
+
 import type { ChunkCoord } from "../chunk/Chunk";
 
 export class SceneManager {
@@ -36,6 +38,7 @@ export class SceneManager {
   private voxelRenderer: VoxelRenderer;
   //private boundaryRenderer: BoundaryRenderer;
   private voxelGridRenderer: VoxelGridRenderer;
+  private cameraGuideRenderer: CameraGuideRenderer;
   private chunkManager: ChunkManager;
 
   private currentChunk: ChunkCoord = { x: 0, y: 0 };
@@ -44,6 +47,11 @@ export class SceneManager {
     this.scene = new Scene(engine);
     this.scene.clearColor = new Color4(0.02, 0.03, 0.06, 1.0);
     this.cameraController = new CameraController(this.scene, canvas);
+
+    this.cameraGuideRenderer = new CameraGuideRenderer(
+      this.scene,
+      this.cameraController.getCamera(),
+    );
 
     new HemisphericLight("mainLight", new Vector3(0, 1, 0), this.scene);
 
@@ -106,7 +114,12 @@ export class SceneManager {
     this.voxelGridRenderer.setPlaneAlpha(alpha);
   }
 
+  setCameraGuideVisible(visible: boolean) {
+    this.cameraGuideRenderer.setVisible(visible);
+  }
+
   dispose() {
+    this.cameraGuideRenderer.dispose();
     this.voxelRenderer.dispose();
     //this.boundaryRenderer.dispose();
     this.voxelGridRenderer.dispose();
