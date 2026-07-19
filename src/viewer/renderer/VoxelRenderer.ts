@@ -1,27 +1,34 @@
 import {
-	Matrix,
-	Mesh,
-	MeshBuilder,
-	Scene,
-	StandardMaterial,
-	Color3,
+  Matrix,
+  Mesh,
+  MeshBuilder,
+  Scene,
+  StandardMaterial,
+  Color3,
 } from "@babylonjs/core";
 
 import type { CellData } from "../../data/CellData";
 import { CoordinateMapper } from "../core/CoordinateMapper";
 
+export interface FailCellRenderResult {
+  failCount: number;
+  thinInstanceBuildMs: number;
+}
+
 export class VoxelRenderer {
-	private readonly scene: Scene;
+  private readonly scene: Scene;
 
-	private failBaseMesh: Mesh | null = null;
-	private failMaterial: StandardMaterial | null = null;
-	private referenceMesh: Mesh | null = null;
+  private failBaseMesh: Mesh | null = null;
+  private failMaterial: StandardMaterial | null = null;
+  private referenceMesh: Mesh | null = null;
 
-	constructor(scene: Scene) {
-		this.scene = scene;
-		this.createFailBaseMesh();
-	}
+  constructor(scene: Scene) {
+    this.scene = scene;
+    this.createFailBaseMesh();
+  }
 
+  // 기존 RenderFailCells() 메서드 제거 추후 원복 가능
+  /*
 	renderFailCells(cells: CellData[]) {
 
 		if (!this.failBaseMesh) {
@@ -50,98 +57,130 @@ export class VoxelRenderer {
 
 		this.failBaseMesh.thinInstanceRefreshBoundingInfo();
 	}
+	*/
+  renderFailCells(cells: CellData[]): FailCellRenderResult {
+    const startTime = performance.now();
 
-	renderReferenceCell() {
-		if (this.referenceMesh) {
-			this.referenceMesh.dispose();
-		}
+    if (!this.failBaseMesh) {
+      return {
+        failCount: 0,
+        thinInstanceBuildMs: 0,
+      };
+    }
 
-		const refCell = MeshBuilder.CreateBox(
-			"referenceCell",
-			{
-				size: 1.2,
-			},
-			this.scene
-		);
+    /**
+     * 현재 Benchmark 데이터는 모두 FAIL Cell이므로
+     * MockGenerator에서 failCells를 전달하면
+     * 추가 filter가 필요 없다.
+     *
+     * 일반 데이터에서도 SceneManager가 chunk.failCells를
+     * 넘기고 있으므로 그대로 사용하면 된다.
+     */
+    const failCells = cells;
 
-		const material = new StandardMaterial("referenceCellMaterial", this.scene);
-		material.diffuseColor = new Color3(1.0, 0.85, 0.05);
-		material.emissiveColor = new Color3(0.8, 0.55, 0.0);
+    const matrices = new Float32Array(16 * failCells.length);
 
-		refCell.material = material;
+    for (let index = 0; index < failCells.length; index++) {
+      const cell = failCells[index];
 
-		refCell.enableEdgesRendering();
+      const pos = CoordinateMapper.physicalToWorld(cell);
 
-		refCell.edgesWidth = 2.2;
+      const matrix = Matrix.Translation(pos.x, pos.y, pos.z);
 
-		refCell.edgesColor.set(1.0, 1.0, 1.0, 1.0);
+      matrix.copyToArray(matrices, index * 16);
+    }
 
-		// Physical (0,0,0)
-		refCell.position = CoordinateMapper.physicalToWorld({
-			id: "reference",
-			physicalX: 0,
-			physicalY: 0,
-			physicalZ: 0,
-			isFail: false,
-			type: "reference",
-		});
+    this.failBaseMesh.thinInstanceSetBuffer("matrix", matrices, 16);
 
-		this.referenceMesh = refCell;
-	}
+    this.failBaseMesh.thinInstanceRefreshBoundingInfo();
 
-	private createFailBaseMesh() {
+    const thinInstanceBuildMs = performance.now() - startTime;
 
-		this.failBaseMesh =
-			MeshBuilder.CreateBox(
-				"failCellBase",
-				{
-					size: 0.9
-				},
-				this.scene
-			);
+    return {
+      failCount: failCells.length,
+      thinInstanceBuildMs,
+    };
+  }
 
-		this.failMaterial =
-			new StandardMaterial(
-				"failCellMaterial",
-				this.scene
-			);
+  renderReferenceCell() {
+    if (this.referenceMesh) {
+      this.referenceMesh.dispose();
+    }
 
-		this.failMaterial.diffuseColor = new Color3(1, 0.05, 0.08);
-		this.failMaterial.emissiveColor = new Color3(0.45, 0, 0);
+    const refCell = MeshBuilder.CreateBox(
+      "referenceCell",
+      {
+        size: 1.2,
+      },
+      this.scene,
+    );
 
-		this.failBaseMesh.material = this.failMaterial;
+    const material = new StandardMaterial("referenceCellMaterial", this.scene);
+    material.diffuseColor = new Color3(1.0, 0.85, 0.05);
+    material.emissiveColor = new Color3(0.8, 0.55, 0.0);
 
-		// ---------- Edge ----------
-		this.failBaseMesh.enableEdgesRendering();
+    refCell.material = material;
 
-		this.failBaseMesh.edgesWidth = 2.0;
+    refCell.enableEdgesRendering();
 
-		this.failBaseMesh.edgesColor.set(1.0, 1.0, 1.0, 0.95);
-	}
+    refCell.edgesWidth = 2.2;
 
-	clearFailCells() {
-		if (!this.failBaseMesh) {
-			return;
-		}
+    refCell.edgesColor.set(1.0, 1.0, 1.0, 1.0);
 
-		this.failBaseMesh
-			.thinInstanceSetBuffer(
-				"matrix",
-				new Float32Array(),
-				16
-			);
-	}
+    // Physical (0,0,0)
+    refCell.position = CoordinateMapper.physicalToWorld({
+      id: "reference",
+      physicalX: 0,
+      physicalY: 0,
+      physicalZ: 0,
+      isFail: false,
+      type: "reference",
+    });
 
-	dispose() {
+    this.referenceMesh = refCell;
+  }
 
-		if (this.failBaseMesh) {
-			this.failBaseMesh.dispose();
-			this.failBaseMesh = null;
-		}
+  private createFailBaseMesh() {
+    this.failBaseMesh = MeshBuilder.CreateBox(
+      "failCellBase",
+      {
+        size: 0.9,
+      },
+      this.scene,
+    );
 
-		if (this.referenceMesh) {
-			this.referenceMesh.dispose();
-			this.referenceMesh = null;
-		}
-	}
+    this.failMaterial = new StandardMaterial("failCellMaterial", this.scene);
+
+    this.failMaterial.diffuseColor = new Color3(1, 0.05, 0.08);
+    this.failMaterial.emissiveColor = new Color3(0.45, 0, 0);
+
+    this.failBaseMesh.material = this.failMaterial;
+
+    // ---------- Edge ----------
+    this.failBaseMesh.enableEdgesRendering();
+
+    this.failBaseMesh.edgesWidth = 2.0;
+
+    this.failBaseMesh.edgesColor.set(1.0, 1.0, 1.0, 0.95);
+  }
+
+  clearFailCells() {
+    if (!this.failBaseMesh) {
+      return;
+    }
+
+    this.failBaseMesh.thinInstanceSetBuffer("matrix", new Float32Array(), 16);
+  }
+
+  dispose() {
+    if (this.failBaseMesh) {
+      this.failBaseMesh.dispose();
+      this.failBaseMesh = null;
+    }
+
+    if (this.referenceMesh) {
+      this.referenceMesh.dispose();
+      this.referenceMesh = null;
+    }
+  }
 }

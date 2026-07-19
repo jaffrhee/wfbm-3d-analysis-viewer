@@ -15,7 +15,15 @@ export class ViewerEngine {
     });
 
     this.sceneManager = new SceneManager(this.engine, canvas);
-    this.debugManager = new DebugManager(this.engine, this.sceneManager.getCamera());
+
+    //this.debugManager = new DebugManager(this.engine, this.sceneManager.getCamera()); // 기존 코드 @20260719
+    // 새 코드 @20260719 [성능측정용 DebugManager 생성자에 Scene과 getPerformanceInfo() 추가]
+    this.debugManager = new DebugManager(
+      this.engine,
+      this.sceneManager.getCamera(),
+      this.sceneManager.scene,
+      () => this.sceneManager.getPerformanceInfo(),
+    );
 
     window.addEventListener("resize", this.handleResize);
   }

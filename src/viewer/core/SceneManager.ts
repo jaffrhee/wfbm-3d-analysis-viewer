@@ -11,8 +11,17 @@ import {
 } from "@babylonjs/core";
 import { CameraController } from "../camera/CameraController";
 
-import { VoxelRenderer } from "../renderer/VoxelRenderer";
+import {
+  VoxelRenderer,
+  type FailCellRenderResult, // @20260719 추가 [성능측적용]
+} from "../renderer/VoxelRenderer";
 //import { generateMockChunk } from "../../data/MockGenerator";
+
+// @20260719 [성능측정용] ViewerPerformanceInfo 인터페이스 정측
+import {
+  BENCHMARK_FAIL_RATE,
+  BENCHMARK_TOTAL_CELL_COUNT,
+} from "../../data/MockGenerator";
 
 import {
   CoordinateMapper,
@@ -26,9 +35,21 @@ import { ChunkManager } from "../chunk/ChunkManager";
 import { ViewerEvents } from "./ViewerEvents";
 import { VoxelGridRenderer } from "../renderer/VoxelGridRenderer";
 
-import { CameraGuideRenderer } from "../debug/CameraGuideRenderer";
+import { CameraGuideRenderer } from "../renderer/CameraGuideRenderer";
 
 import type { ChunkCoord } from "../chunk/Chunk";
+
+export interface ViewerPerformanceInfo {
+  gridSize: string;
+  totalCellCount: number;
+
+  failRate: number;
+  failCount: number;
+
+  dataGenerationMs: number;
+  thinInstanceBuildMs: number;
+  loadToFirstFrameMs: number;
+}
 
 export class SceneManager {
   readonly scene: Scene;
@@ -42,6 +63,20 @@ export class SceneManager {
   private chunkManager: ChunkManager;
 
   private currentChunk: ChunkCoord = { x: 0, y: 0 };
+
+  private performanceInfo: ViewerPerformanceInfo = {
+    gridSize: "64 × 300 × 64",
+    totalCellCount: BENCHMARK_TOTAL_CELL_COUNT,
+
+    failRate: BENCHMARK_FAIL_RATE,
+    failCount: 0,
+
+    dataGenerationMs: 0,
+    thinInstanceBuildMs: 0,
+    loadToFirstFrameMs: 0,
+  };
+
+  private firstFrameStartTime: number | null = null;
 
   constructor(engine: Engine, canvas: HTMLCanvasElement) {
     this.scene = new Scene(engine);
@@ -64,7 +99,8 @@ export class SceneManager {
     this.voxelGridRenderer = new VoxelGridRenderer(this.scene);
     this.voxelGridRenderer.render();
 
-    this.events = new ViewerEvents();
+    // @20260719 기존 코드 [추후 원복 가능]]
+    /*this.events = new ViewerEvents();
     this.chunkManager = new ChunkManager(this.events);
 
     this.events.addChunkChangedListener((chunk) => {
@@ -73,7 +109,36 @@ export class SceneManager {
 
     const chunk = this.chunkManager.getCurrentChunk();
 
-    this.voxelRenderer.renderFailCells(chunk.failCells);
+    this.voxelRenderer.renderFailCells(chunk.failCells);*/
+
+    this.events = new ViewerEvents();
+
+    const generationStartTime = performance.now();
+
+    this.chunkManager = new ChunkManager(this.events);
+
+    const dataGenerationMs = performance.now() - generationStartTime;
+
+    const chunk = this.chunkManager.getCurrentChunk();
+
+    const loadStartTime = generationStartTime;
+
+    const renderResult = this.voxelRenderer.renderFailCells(chunk.failCells);
+
+    this.updatePerformanceInfo(dataGenerationMs, renderResult);
+
+    this.firstFrameStartTime = loadStartTime;
+
+    this.scene.onAfterRenderObservable.add(() => {
+      if (this.firstFrameStartTime === null) {
+        return;
+      }
+
+      this.performanceInfo.loadToFirstFrameMs =
+        performance.now() - this.firstFrameStartTime;
+
+      this.firstFrameStartTime = null;
+    });
 
     /*const center = CoordinateMapper.getWorldCenter(
       WFBM_SIZE_X,
@@ -85,6 +150,8 @@ export class SceneManager {
     this.cameraController.home();
   }
 
+  // @20260719 [기존 코드] 추후 원복 가능
+  /*
   loadChunk(coord: ChunkCoord) {
     this.currentChunk = coord;
 
@@ -94,6 +161,72 @@ export class SceneManager {
     this.voxelRenderer.renderFailCells(chunk.failCells);
 
     console.log("Loaded Chunk:", chunk.key, "Fail:", chunk.failCells.length);
+  }*/
+
+  // @20260719 [성능측정용] loadChunk() 메서드 수정
+  loadChunk(coord: ChunkCoord) {
+    this.currentChunk = coord;
+
+    const loadStartTime = performance.now();
+
+    const generationStartTime = performance.now();
+
+    const chunk = this.chunkManager.switchChunk(coord);
+
+    const dataGenerationMs = performance.now() - generationStartTime;
+
+    const renderResult = this.voxelRenderer.renderFailCells(chunk.failCells);
+
+    this.updatePerformanceInfo(dataGenerationMs, renderResult);
+
+    /**
+     * 다음 scene.render()가 완료되면
+     * onAfterRenderObservable에서
+     * Load to First Frame 시간이 확정된다.
+     */
+    this.firstFrameStartTime = loadStartTime;
+
+    console.log(
+      "Loaded Chunk:",
+      chunk.key,
+      "Fail:",
+      chunk.failCells.length,
+      "Generation:",
+      `${dataGenerationMs.toFixed(2)} ms`,
+      "Thin Instance:",
+      `${renderResult.thinInstanceBuildMs.toFixed(2)} ms`,
+    );
+  }
+
+  // @20260719 [성능측정용] updatePerformanceInfo() 메서드 추가
+  private updatePerformanceInfo(
+    dataGenerationMs: number,
+    renderResult: FailCellRenderResult,
+  ) {
+    this.performanceInfo = {
+      ...this.performanceInfo,
+
+      failRate: (renderResult.failCount / BENCHMARK_TOTAL_CELL_COUNT) * 100,
+
+      failCount: renderResult.failCount,
+
+      dataGenerationMs,
+
+      thinInstanceBuildMs: renderResult.thinInstanceBuildMs,
+
+      /**
+       * 아직 다음 프레임이 완료되지 않았으므로
+       * 이전 값이 남지 않도록 0으로 초기화한다.
+       */
+      loadToFirstFrameMs: 0,
+    };
+  }
+
+  // @20260719 [성능측정용] getPerformanceInfo() 메서드 추가
+  getPerformanceInfo(): ViewerPerformanceInfo {
+    return {
+      ...this.performanceInfo,
+    };
   }
 
   getCamera() {
@@ -127,16 +260,9 @@ export class SceneManager {
       WFBM_SIZE_Z,
     );
 
-    const size = new Vector3(
-      WFBM_SIZE_X,
-      WFBM_SIZE_Y,
-      WFBM_SIZE_Z,
-    );
+    const size = new Vector3(WFBM_SIZE_X, WFBM_SIZE_Y, WFBM_SIZE_Z);
 
-    return this.cameraController.autoFit(
-      center,
-      size,
-    );
+    return this.cameraController.autoFit(center, size);
   }
 
   dispose() {

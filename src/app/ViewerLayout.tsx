@@ -15,7 +15,7 @@ import { ViewerEngine } from "../viewer/core/ViewerEngine";
 import type { DebugInfo } from "../viewer/debug/DebugManager";
 import type { CameraState } from "../viewer/camera/CameraController";
 import {
-  DEFAULT_VIEWER_SETTINGS,
+  //DEFAULT_VIEWER_SETTINGS,
   loadViewerSettings,
   saveViewerSettings,
 } from "../viewer/settings/ViewerSettings";
