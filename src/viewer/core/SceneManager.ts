@@ -75,12 +75,14 @@ export class SceneManager {
 
     this.voxelRenderer.renderFailCells(chunk.failCells);
 
-    const center = CoordinateMapper.getWorldCenter(
+    /*const center = CoordinateMapper.getWorldCenter(
       WFBM_SIZE_X,
       WFBM_SIZE_Y,
       WFBM_SIZE_Z,
     );
-    this.cameraController.home(center);
+    this.cameraController.home(center);*/
+
+    this.cameraController.home();
   }
 
   loadChunk(coord: ChunkCoord) {

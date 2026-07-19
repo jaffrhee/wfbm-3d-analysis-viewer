@@ -14,6 +14,11 @@ import type { ChunkCoord } from "../viewer/chunk/Chunk";
 import { ViewerEngine } from "../viewer/core/ViewerEngine";
 import type { DebugInfo } from "../viewer/debug/DebugManager";
 import type { CameraState } from "../viewer/camera/CameraController";
+import {
+  DEFAULT_VIEWER_SETTINGS,
+  loadViewerSettings,
+  saveViewerSettings,
+} from "../viewer/settings/ViewerSettings";
 
 import type { ArcRotateCamera } from "@babylonjs/core";
 
@@ -23,23 +28,54 @@ export default function ViewerLayout() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<ViewerEngine | null>(null);
 
+  const [initialSettings] = useState(loadViewerSettings);
+
   const [currentChunk, setCurrentChunk] = useState<ChunkCoord>({ x: 0, y: 0 });
   const [mainCamera, setMainCamera] = useState<ArcRotateCamera | null>(null);
 
-  const [showDebugPanel, setShowDebugPanel] = useState(false);
+  //Viewer settings
+  /*const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [showNavigationPad, setShowNavigationPad] = useState(true);
+  const [showCoordinateGizmo, setShowCoordinateGizmo] = useState(true);*/
+  const [showDebugPanel, setShowDebugPanel] = useState(
+    initialSettings.viewer.showDebugPanel,
+  );
+
+  const [showNavigationPad, setShowNavigationPad] = useState(
+    initialSettings.viewer.showNavigationPad,
+  );
+
+  const [showCoordinateGizmo, setShowCoordinateGizmo] = useState(
+    initialSettings.viewer.showCoordinateGizmo,
+  );
+
   const [showCameraGuide, setShowCameraGuide] = useState(false);
 
-  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(148);
+  //mouse wheel speed
+  //const [mouseWheelSpeed, setMouseWheelSpeed] = useState(148);
+  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
+    initialSettings.mouseWheelSpeed,
+  );
   const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
   const [cameraState, setCameraState] = useState<CameraState | null>(null);
 
   const [showConfigDialog, setShowConfigDialog] = useState(false);
-  const [showCoordinateGizmo, setShowCoordinateGizmo] = useState(true);
 
-  const [backFaceColor, setBackFaceColor] = useState("#0073bf");
+  //Rendering settings
+  /*const [backFaceColor, setBackFaceColor] = useState("#0073bf");
   const [sideFaceColor, setSideFaceColor] = useState("#4040e6");
-  const [planeAlpha, setPlaneAlpha] = useState(0.4);
+  const [planeAlpha, setPlaneAlpha] = useState(0.4);*/
+  const [backFaceColor, setBackFaceColor] = useState(
+    initialSettings.rendering.backFaceColor,
+  );
+
+  const [sideFaceColor, setSideFaceColor] = useState(
+    initialSettings.rendering.sideFaceColor,
+  );
+
+  const [planeAlpha, setPlaneAlpha] = useState(
+    initialSettings.rendering.planeAlpha,
+  );
 
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
@@ -63,7 +99,12 @@ export default function ViewerLayout() {
     engineRef.current = viewerEngine;
 
     setMainCamera(viewerEngine.getCamera());
-    setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
+    //setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
+
+    viewerEngine.getCameraController().setMouseWheelSpeed(initialSettings.mouseWheelSpeed);
+    viewerEngine.setBackFaceColor(initialSettings.rendering.backFaceColor);
+    viewerEngine.setSideFaceColor(initialSettings.rendering.sideFaceColor);
+    viewerEngine.setPlaneAlpha(initialSettings.rendering.planeAlpha);
 
     setCameraState(viewerEngine.getCameraController().getCameraState());
 
@@ -82,11 +123,11 @@ export default function ViewerLayout() {
       if (e.key === "2") viewerEngine.loadChunk(1, 0);
       if (e.key === "3") viewerEngine.loadChunk(-1, 0);
       if (e.key === "4") viewerEngine.loadChunk(0, 1);
-      if (e.key.toLowerCase() === "f") {
+      /*if (e.key.toLowerCase() === "f") {
         const radius = viewerEngine.autoFitCamera();
 
         console.log("Auto Fit Radius:", radius);
-      }
+      }*/
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -100,6 +141,32 @@ export default function ViewerLayout() {
       viewerEngine.dispose();
     };
   }, []);
+
+  useEffect(() => {
+    saveViewerSettings({
+      mouseWheelSpeed,
+
+      rendering: {
+        backFaceColor,
+        sideFaceColor,
+        planeAlpha,
+      },
+
+      viewer: {
+        showNavigationPad,
+        showDebugPanel,
+        showCoordinateGizmo,
+      },
+    });
+  }, [
+    mouseWheelSpeed,
+    backFaceColor,
+    sideFaceColor,
+    planeAlpha,
+    showNavigationPad,
+    showDebugPanel,
+    showCoordinateGizmo,
+  ]);
 
   return (
     <div className="viewer-root">
@@ -145,10 +212,10 @@ export default function ViewerLayout() {
         />
       )}
 
-      {showConfigDialog && cameraState && (
+      {showConfigDialog && cameraState && debugInfo && (
         <ConfigDialog
           cameraState={cameraState}
-          initialMouseWheelSpeed={mouseWheelSpeed}
+          mouseWheelSpeed={mouseWheelSpeed}
           backFaceColor={backFaceColor}
           sideFaceColor={sideFaceColor}
           planeAlpha={planeAlpha}

@@ -5,7 +5,8 @@ import type { CameraState } from "../../viewer/camera/CameraController";
 interface ConfigDialogProps {
   cameraState: CameraState;
 
-  initialMouseWheelSpeed: number;
+  //initialMouseWheelSpeed: number;
+  mouseWheelSpeed: number;
 
   backFaceColor: string;
   sideFaceColor: string;
@@ -35,7 +36,7 @@ interface ConfigDialogProps {
 
 export default function ConfigDialog({
   cameraState,
-  initialMouseWheelSpeed,
+  mouseWheelSpeed,
   backFaceColor,
   sideFaceColor,
   planeAlpha,
@@ -55,9 +56,9 @@ export default function ConfigDialog({
   onApplyPosition,
   onClose,
 }: ConfigDialogProps) {
-  const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
+  /*const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
     initialMouseWheelSpeed,
-  );
+  );*/
 
   const [dialogPosition, setDialogPosition] = useState({ x: 1260, y: 40 });
   const draggingRef = useRef(false);
@@ -95,9 +96,9 @@ export default function ConfigDialog({
     };
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     setMouseWheelSpeed(initialMouseWheelSpeed);
-  }, [initialMouseWheelSpeed]);
+  }, [initialMouseWheelSpeed]);*/
 
   return (
     <div
@@ -621,12 +622,13 @@ export default function ConfigDialog({
               className="config-number"
               type="number"
               step={1}
-              value={mouseWheelSpeed.toFixed(1)}
+              //value={mouseWheelSpeed.toFixed(1)}
+              value={mouseWheelSpeed}
               onChange={(e) => {
                 const value = Number(e.target.value);
 
                 //onApplyCamera(cameraState.alpha, value, cameraState.radius);
-                setMouseWheelSpeed(value);
+                //setMouseWheelSpeed(value);
                 onChangeMouseWheelSpeed(value);
               }}
             />
@@ -637,12 +639,13 @@ export default function ConfigDialog({
             min={1}
             max={200}
             step={1}
+            //value={mouseWheelSpeed}
             value={mouseWheelSpeed}
             onChange={(e) => {
               const value = Number(e.target.value);
 
               //onApplyCamera(cameraState.alpha, value, cameraState.radius);
-              setMouseWheelSpeed(value);
+              //setMouseWheelSpeed(value);
               onChangeMouseWheelSpeed(value);
             }}
           />

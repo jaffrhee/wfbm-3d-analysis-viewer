@@ -56,9 +56,17 @@ export class CameraController {
   private readonly extendedMinWheelPrecision = 0.05;
 
   // Home
-  private homeTarget = Vector3.Zero();
+  //private homeTarget = Vector3.Zero();
+  private homeTarget = new Vector3(
+    -39.6,
+    113.0,
+    109.2
+  );
 
   private readonly homeView = {
+    //alpha: -0.793,
+    //beta: 0.788,
+    //radius: 620,
     alpha: -0.793,
     beta: 0.788,
     radius: 620,
