@@ -18,10 +18,8 @@ import {
 //import { generateMockChunk } from "../../data/MockGenerator";
 
 // @20260719 [성능측정용] ViewerPerformanceInfo 인터페이스 정측
-import {
-  BENCHMARK_FAIL_RATE,
-  BENCHMARK_TOTAL_CELL_COUNT,
-} from "../../data/MockGenerator";
+import { DEFAULT_PERFORMANCE_FAIL_RATE, PERFORMANCE_TOTAL_CELL_COUNT } from "../../data/PerformanceMockGenerator";
+import type { ChunkGenerationOptions } from "../chunk/ChunkManager";
 
 import {
   CoordinateMapper,
@@ -35,13 +33,18 @@ import { ChunkManager } from "../chunk/ChunkManager";
 import { ViewerEvents } from "./ViewerEvents";
 import { VoxelGridRenderer } from "../renderer/VoxelGridRenderer";
 
-import { CameraGuideRenderer } from "../renderer/CameraGuideRenderer";
+//import { CameraGuideRenderer } from "../renderer/CameraGuideRenderer";
 
 import type { ChunkCoord } from "../chunk/Chunk";
 
 export interface ViewerPerformanceInfo {
+
+  enabled: boolean;
+
   gridSize: string;
   totalCellCount: number;
+
+  configuredFailRate: number;
 
   failRate: number;
   failCount: number;
@@ -59,34 +62,49 @@ export class SceneManager {
   private voxelRenderer: VoxelRenderer;
   //private boundaryRenderer: BoundaryRenderer;
   private voxelGridRenderer: VoxelGridRenderer;
-  private cameraGuideRenderer: CameraGuideRenderer;
+  //private cameraGuideRenderer: CameraGuideRenderer;
   private chunkManager: ChunkManager;
 
   private currentChunk: ChunkCoord = { x: 0, y: 0 };
 
   private performanceInfo: ViewerPerformanceInfo = {
-    gridSize: "64 × 300 × 64",
-    totalCellCount: BENCHMARK_TOTAL_CELL_COUNT,
 
-    failRate: BENCHMARK_FAIL_RATE,
+    enabled: false,
+
+    gridSize: "64 × 300 × 64",
+
+    totalCellCount: PERFORMANCE_TOTAL_CELL_COUNT,
+
+    configuredFailRate:
+      DEFAULT_PERFORMANCE_FAIL_RATE,
+
+    failRate: 0,
+
     failCount: 0,
 
     dataGenerationMs: 0,
+
     thinInstanceBuildMs: 0,
-    loadToFirstFrameMs: 0,
+
+    loadToFirstFrameMs: 0
+
   };
 
   private firstFrameStartTime: number | null = null;
 
-  constructor(engine: Engine, canvas: HTMLCanvasElement) {
+  constructor(
+    engine: Engine,
+    canvas: HTMLCanvasElement,
+    generationOptions?: Partial<ChunkGenerationOptions>
+  ) {
     this.scene = new Scene(engine);
     this.scene.clearColor = new Color4(0.02, 0.03, 0.06, 1.0);
     this.cameraController = new CameraController(this.scene, canvas);
 
-    this.cameraGuideRenderer = new CameraGuideRenderer(
+    /*this.cameraGuideRenderer = new CameraGuideRenderer(
       this.scene,
       this.cameraController.getCamera(),
-    );
+    );*/
 
     new HemisphericLight("mainLight", new Vector3(0, 1, 0), this.scene);
 
@@ -115,7 +133,7 @@ export class SceneManager {
 
     const generationStartTime = performance.now();
 
-    this.chunkManager = new ChunkManager(this.events);
+    this.chunkManager = new ChunkManager(this.events, generationOptions);
 
     const dataGenerationMs = performance.now() - generationStartTime;
 
@@ -198,27 +216,60 @@ export class SceneManager {
     );
   }
 
+  setPerformanceOptions(
+    enabled: boolean,
+    failRate: number,
+  ) {
+
+    this.chunkManager.setPerformanceOptions(
+      enabled,
+      failRate,
+    );
+
+    this.loadChunk(
+      this.currentChunk,
+    );
+
+  }
+
   // @20260719 [성능측정용] updatePerformanceInfo() 메서드 추가
   private updatePerformanceInfo(
     dataGenerationMs: number,
     renderResult: FailCellRenderResult,
   ) {
+    const options =
+      this.chunkManager.getGenerationOptions();
+
     this.performanceInfo = {
+
       ...this.performanceInfo,
 
-      failRate: (renderResult.failCount / BENCHMARK_TOTAL_CELL_COUNT) * 100,
+      enabled:
+        options.performanceEnabled,
 
-      failCount: renderResult.failCount,
+      configuredFailRate:
+        options.performanceFailRate,
+
+      failRate:
+
+        (
+          renderResult.failCount
+          /
+          PERFORMANCE_TOTAL_CELL_COUNT
+        )
+
+        * 100,
+
+      failCount:
+        renderResult.failCount,
 
       dataGenerationMs,
 
-      thinInstanceBuildMs: renderResult.thinInstanceBuildMs,
+      thinInstanceBuildMs:
+        renderResult.thinInstanceBuildMs,
 
-      /**
-       * 아직 다음 프레임이 완료되지 않았으므로
-       * 이전 값이 남지 않도록 0으로 초기화한다.
-       */
-      loadToFirstFrameMs: 0,
+      loadToFirstFrameMs: 0
+
     };
   }
 
@@ -249,9 +300,9 @@ export class SceneManager {
     this.voxelGridRenderer.setPlaneAlpha(alpha);
   }
 
-  setCameraGuideVisible(visible: boolean) {
+  /*setCameraGuideVisible(visible: boolean) {
     this.cameraGuideRenderer.setVisible(visible);
-  }
+  }*/
 
   autoFitCamera() {
     const center = CoordinateMapper.getWorldCenter(
@@ -266,7 +317,7 @@ export class SceneManager {
   }
 
   dispose() {
-    this.cameraGuideRenderer.dispose();
+    //this.cameraGuideRenderer.dispose();
     this.voxelRenderer.dispose();
     //this.boundaryRenderer.dispose();
     this.voxelGridRenderer.dispose();

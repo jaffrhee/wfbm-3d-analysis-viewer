@@ -49,10 +49,10 @@ export default function ViewerLayout() {
     initialSettings.viewer.showCoordinateGizmo,
   );
 
-  const [showCameraGuide, setShowCameraGuide] = useState(false);
+  //const [showCameraGuide, setShowCameraGuide] = useState(false);
 
   //mouse wheel speed
-  //const [mouseWheelSpeed, setMouseWheelSpeed] = useState(148);
+  // const [mouseWheelSpeed, setMouseWheelSpeed] = useState(148);
   const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
     initialSettings.mouseWheelSpeed,
   );
@@ -77,6 +77,14 @@ export default function ViewerLayout() {
     initialSettings.rendering.planeAlpha,
   );
 
+  const [performanceEnabled, setPerformanceEnabled] = useState(
+    initialSettings.performance.enabled,
+  );
+
+  const [performanceFailRate, setPerformanceFailRate] = useState(
+    initialSettings.performance.failRate,
+  );
+
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
     setCurrentChunk(coord);
@@ -95,13 +103,18 @@ export default function ViewerLayout() {
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    const viewerEngine = new ViewerEngine(canvasRef.current);
+    const viewerEngine = new ViewerEngine(canvasRef.current, {
+      performanceEnabled,
+      performanceFailRate,
+    });
     engineRef.current = viewerEngine;
 
     setMainCamera(viewerEngine.getCamera());
-    //setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
+    setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
 
-    viewerEngine.getCameraController().setMouseWheelSpeed(initialSettings.mouseWheelSpeed);
+    viewerEngine
+      .getCameraController()
+      .setMouseWheelSpeed(initialSettings.mouseWheelSpeed);
     viewerEngine.setBackFaceColor(initialSettings.rendering.backFaceColor);
     viewerEngine.setSideFaceColor(initialSettings.rendering.sideFaceColor);
     viewerEngine.setPlaneAlpha(initialSettings.rendering.planeAlpha);
@@ -157,6 +170,11 @@ export default function ViewerLayout() {
         showDebugPanel,
         showCoordinateGizmo,
       },
+
+      performance: {
+        enabled: performanceEnabled,
+        failRate: performanceFailRate,
+      },
     });
   }, [
     mouseWheelSpeed,
@@ -166,6 +184,8 @@ export default function ViewerLayout() {
     showNavigationPad,
     showDebugPanel,
     showCoordinateGizmo,
+    performanceEnabled,
+    performanceFailRate,
   ]);
 
   return (
@@ -204,11 +224,6 @@ export default function ViewerLayout() {
 
             engineRef.current?.getCameraController().setMouseWheelSpeed(speed);
           }}
-          showCameraGuide={showCameraGuide}
-          onToggleCameraGuide={(visible) => {
-            setShowCameraGuide(visible);
-            engineRef.current?.setCameraGuideVisible(visible);
-          }}
         />
       )}
 
@@ -222,6 +237,8 @@ export default function ViewerLayout() {
           showNavigationPad={showNavigationPad}
           showDebugPanel={showDebugPanel}
           showCoordinateGizmo={showCoordinateGizmo}
+          performanceEnabled={performanceEnabled}
+          performanceFailRate={performanceFailRate}
           /*onApplyCamera={(alpha, beta, radius) =>
             engineRef.current
               ?.getCameraController()
@@ -276,6 +293,19 @@ export default function ViewerLayout() {
           onChangePlaneAlpha={(alpha) => {
             setPlaneAlpha(alpha);
             engineRef.current?.setPlaneAlpha(alpha);
+          }}
+          onChangePerformanceEnabled={(enabled) => {
+            setPerformanceEnabled(enabled);
+
+            engineRef.current?.setPerformanceOptions(
+              enabled,
+              performanceFailRate,
+            );
+          }}
+          onChangePerformanceFailRate={(rate) => {
+            setPerformanceFailRate(rate);
+
+            engineRef.current?.setPerformanceOptions(performanceEnabled, rate);
           }}
           onClose={() => setShowConfigDialog(false)}
         />

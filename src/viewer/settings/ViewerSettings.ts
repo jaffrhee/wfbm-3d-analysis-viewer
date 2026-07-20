@@ -12,6 +12,11 @@ export interface ViewerSettings {
     showDebugPanel: boolean;
     showCoordinateGizmo: boolean;
   };
+
+  performance: {
+    enabled: boolean;
+    failRate: number;
+  };
 }
 
 const STORAGE_KEY = "wfbm-viewer-settings-v1";
@@ -29,6 +34,11 @@ export const DEFAULT_VIEWER_SETTINGS: ViewerSettings = {
     showNavigationPad: true,
     showDebugPanel: false,
     showCoordinateGizmo: true,
+  },
+
+  performance: {
+    enabled: false,
+    failRate: 50,
   },
 };
 
@@ -79,6 +89,13 @@ export function loadViewerSettings(): ViewerSettings {
             ? saved.viewer.showCoordinateGizmo
             : DEFAULT_VIEWER_SETTINGS.viewer.showCoordinateGizmo,
       },
+
+      performance: {
+        enabled: false,
+        failRate: 50,
+      },
+
+
     };
   } catch (error) {
     console.warn("Failed to load viewer settings:", error);

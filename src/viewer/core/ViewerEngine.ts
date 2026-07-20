@@ -1,20 +1,24 @@
 import { Engine } from "@babylonjs/core";
 import { SceneManager } from "./SceneManager";
 import { DebugManager } from "../debug/DebugManager";
+import type { ChunkGenerationOptions } from "../chunk/ChunkManager";
 
 export class ViewerEngine {
   private readonly engine: Engine;
   private readonly sceneManager: SceneManager;
   private readonly debugManager: DebugManager;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    generationOptions: ChunkGenerationOptions,
+  ) {
     this.engine = new Engine(canvas, true, {
       preserveDrawingBuffer: true,
       stencil: true,
       antialias: true,
     });
 
-    this.sceneManager = new SceneManager(this.engine, canvas);
+    this.sceneManager = new SceneManager(this.engine, canvas, generationOptions);
 
     //this.debugManager = new DebugManager(this.engine, this.sceneManager.getCamera()); // 기존 코드 @20260719
     // 새 코드 @20260719 [성능측정용 DebugManager 생성자에 Scene과 getPerformanceInfo() 추가]
@@ -83,7 +87,17 @@ export class ViewerEngine {
     return this.sceneManager.autoFitCamera();
   }
 
-  setCameraGuideVisible(visible: boolean) {
+  /*setCameraGuideVisible(visible: boolean) {
     this.sceneManager.setCameraGuideVisible(visible);
+  }*/
+
+  setPerformanceOptions(
+    enabled: boolean,
+    failRate: number,
+  ) {
+    this.sceneManager.setPerformanceOptions(
+      enabled,
+      failRate,
+    );
   }
 }

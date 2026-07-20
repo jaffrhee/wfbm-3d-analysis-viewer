@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./ConfigDialog.css";
 import type { CameraState } from "../../viewer/camera/CameraController";
+import { PERFORMANCE_FAIL_RATES } from "../../data/PerformanceMockGenerator";
 
 interface ConfigDialogProps {
   cameraState: CameraState;
@@ -15,6 +16,9 @@ interface ConfigDialogProps {
   showNavigationPad: boolean;
   showDebugPanel: boolean;
   showCoordinateGizmo: boolean;
+
+  performanceEnabled: boolean;
+  performanceFailRate: number;
 
   onApplyCamera: (alpha: number, beta: number, radius: number) => void;
   //onResetCamera: () => void;
@@ -31,6 +35,9 @@ interface ConfigDialogProps {
   onApplyTarget: (x: number, y: number, z: number) => void; //Target SliderBar 추가
   onApplyPosition: (x: number, y: number, z: number) => void; //Position SliderBar 추가
 
+  onChangePerformanceEnabled: (v: boolean) => void;
+  onChangePerformanceFailRate: (v: number) => void;
+
   onClose: () => void;
 }
 
@@ -43,6 +50,8 @@ export default function ConfigDialog({
   showNavigationPad,
   showDebugPanel,
   showCoordinateGizmo,
+  performanceEnabled,
+  performanceFailRate,
 
   onApplyCamera,
   onChangeShowNavigationPad,
@@ -54,6 +63,8 @@ export default function ConfigDialog({
   onChangePlaneAlpha,
   onApplyTarget,
   onApplyPosition,
+  onChangePerformanceEnabled,
+  onChangePerformanceFailRate,
   onClose,
 }: ConfigDialogProps) {
   /*const [mouseWheelSpeed, setMouseWheelSpeed] = useState(
@@ -714,6 +725,36 @@ export default function ConfigDialog({
             onChange={(e) => onChangeShowCoordinateGizmo(e.target.checked)}
           />
           Show Coordinate Gizmo
+        </label>
+      </section>
+
+      <section className="config-group">
+        <h3>Performance Test</h3>
+
+        <label className="config-check">
+          <input
+            type="checkbox"
+            checked={performanceEnabled}
+            onChange={(e) => onChangePerformanceEnabled(e.target.checked)}
+          />
+          Enable
+        </label>
+
+        <label>
+          Fail Rate
+          <select
+            className="config-select"
+            value={performanceFailRate}
+            onChange={(e) =>
+              onChangePerformanceFailRate(Number(e.target.value))
+            }
+          >
+            {PERFORMANCE_FAIL_RATES.map((rate) => (
+              <option key={rate} value={rate}>
+                {rate}%
+              </option>
+            ))}
+          </select>
         </label>
       </section>
     </div>

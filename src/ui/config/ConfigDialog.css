@@ -145,3 +145,21 @@
 
     font-size: 12px;
 }
+
+.config-select {
+
+    width: 100%;
+
+    margin-top: 6px;
+
+    padding: 6px 8px;
+
+    border-radius: 4px;
+
+    background: #252525;
+
+    color: white;
+
+    border: 1px solid #555;
+
+}

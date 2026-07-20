@@ -11,8 +11,8 @@ interface NavigationPadProps {
   mouseWheelSpeed: number;
   onWheelSpeedChange: (speed: number) => void;
 
-  showCameraGuide: boolean;
-  onToggleCameraGuide: (value: boolean) => void;
+  //showCameraGuide: boolean;
+  //onToggleCameraGuide: (value: boolean) => void;
 }
 
 export default function NavigationPad({
