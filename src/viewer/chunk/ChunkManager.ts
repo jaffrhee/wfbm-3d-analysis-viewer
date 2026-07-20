@@ -112,14 +112,14 @@ export class ChunkManager {
         failRate,
       );
 
-    this.currentChunk =
+    /*this.currentChunk =
       this.generateChunk(
         this.currentChunk.coord,
       );
 
     this.events.notifyChunkChanged(
       this.currentChunk,
-    );
+    );*/
   }
 
   private generateChunk(
