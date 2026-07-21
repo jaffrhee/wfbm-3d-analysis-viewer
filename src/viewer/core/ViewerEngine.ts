@@ -2,6 +2,7 @@ import { Engine } from "@babylonjs/core";
 import { SceneManager } from "./SceneManager";
 import { DebugManager } from "../debug/DebugManager";
 import type { ChunkGenerationOptions } from "../chunk/ChunkManager";
+import type { FailCellPickedListener } from "../interaction/PickingManager";
 
 export class ViewerEngine {
   private readonly engine: Engine;
@@ -42,6 +43,15 @@ export class ViewerEngine {
 
   loadChunk(x: number, y: number) {
     this.sceneManager.loadChunk({ x, y });
+  }
+
+
+  setFailCellPickedListener(
+    listener: FailCellPickedListener | null,
+  ) {
+    this.sceneManager.setFailCellPickedListener(
+      listener,
+    );
   }
 
   getDebugInfo() {

@@ -14,7 +14,10 @@ import {
   StandardMaterial,
   Vector3,
 } from "@babylonjs/core";
-import { PHYSICAL_AXIS, PHYSICAL_AXIS_COLOR } from "../../viewer/core/AxisDefinition";
+import {
+  PHYSICAL_AXIS,
+  PHYSICAL_AXIS_COLOR,
+} from "../../viewer/core/AxisDefinition";
 import { AdvancedDynamicTexture, Control, TextBlock } from "@babylonjs/gui";
 
 interface CoordinateGizmoProps {
@@ -90,8 +93,8 @@ function createArrowHead(
   if (axis === "z") {
     arrow.rotation.x = Math.PI / 2;
   }*/
-  
-    // Babylon cylinder's local axis is +Y. Rotate it to the shared
+
+  // Babylon cylinder's local axis is +Y. Rotate it to the shared
   // WFBM physical-axis world direction.
   if (direction.x > 0) arrow.rotation.z = -Math.PI / 2;
   if (direction.x < 0) arrow.rotation.z = Math.PI / 2;
@@ -113,7 +116,7 @@ function createArrowHead(
 export default function CoordinateGizmo({
   mainCamera,
 }: CoordinateGizmoProps): React.JSX.Element {
-  console.log("[CoordinateGizmo] mainCamera:", mainCamera);
+  //console.log("[CoordinateGizmo] mainCamera:", mainCamera);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -161,7 +164,7 @@ export default function CoordinateGizmo({
     //const xTip = origin.add(new Vector3(GIZMO_STYLE.axisLength, 0, 0));
     //const yTip = origin.add(new Vector3(0, GIZMO_STYLE.axisLength, 0));
     //const zTip = origin.add(new Vector3(0, 0, GIZMO_STYLE.axisLength));
-    
+
     // These are WFBM Physical axes, not Babylon World axis labels.
     const xDirection = PHYSICAL_AXIS.x.scale(GIZMO_STYLE.axisLength);
     const yDirection = PHYSICAL_AXIS.y.scale(GIZMO_STYLE.axisLength);
@@ -178,7 +181,7 @@ export default function CoordinateGizmo({
     //createArrowHead(scene, "xArrow", xColor, xTip, "x");
     //createArrowHead(scene, "yArrow", yColor, yTip, "y");
     //createArrowHead(scene, "zArrow", zColor, zTip, "z");
-    
+
     createArrowHead(scene, "xArrow", xColor, xTip, PHYSICAL_AXIS.x);
     createArrowHead(scene, "yArrow", yColor, yTip, PHYSICAL_AXIS.y);
     createArrowHead(scene, "zArrow", zColor, zTip, PHYSICAL_AXIS.z);
@@ -212,7 +215,7 @@ export default function CoordinateGizmo({
     const labelX = createGuiLabel("labelX", "X", PHYSICAL_AXIS_COLOR.x);
     const labelY = createGuiLabel("labelY", "Y", PHYSICAL_AXIS_COLOR.y);
     const labelZ = createGuiLabel("labelZ", "Z", PHYSICAL_AXIS_COLOR.z);
-    
+
     //const labelX = createGuiLabel("labelX", "X", "red");
     //const labelY = createGuiLabel("labelY", "Y", "lime");
     //const labelZ = createGuiLabel("labelZ", "Z", "deepskyblue");
@@ -221,7 +224,7 @@ export default function CoordinateGizmo({
     const xLabelPos = xTip.add(PHYSICAL_AXIS.x.scale(labelDistance));
     const yLabelPos = yTip.add(PHYSICAL_AXIS.y.scale(labelDistance));
     const zLabelPos = zTip.add(PHYSICAL_AXIS.z.scale(labelDistance));
-    
+
     /*const xLabelPos = xTip.add(
       new Vector3(GIZMO_STYLE.axisLength + GIZMO_STYLE.labelGap, 0, 0),
     );

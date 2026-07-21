@@ -36,6 +36,10 @@ import { VoxelGridRenderer } from "../renderer/VoxelGridRenderer";
 //import { CameraGuideRenderer } from "../renderer/CameraGuideRenderer";
 
 import type { ChunkCoord } from "../chunk/Chunk";
+import {
+  PickingManager,
+  type FailCellPickedListener,
+} from "../interaction/PickingManager";
 
 export interface ViewerPerformanceInfo {
 
@@ -64,6 +68,7 @@ export class SceneManager {
   private voxelGridRenderer: VoxelGridRenderer;
   //private cameraGuideRenderer: CameraGuideRenderer;
   private chunkManager: ChunkManager;
+  private pickingManager: PickingManager;
 
   private currentChunk: ChunkCoord = { x: 0, y: 0 };
 
@@ -110,6 +115,26 @@ export class SceneManager {
 
     this.voxelRenderer = new VoxelRenderer(this.scene);
     this.voxelRenderer.renderReferenceCell();
+
+    this.pickingManager = new PickingManager(
+      this.scene,
+      this.voxelRenderer,
+    );
+
+    // STEP 1 verification output.
+    // A React HUD/selection effect will be connected in later steps.
+    this.pickingManager.setListener((result) => {
+      const { x, y, z } = result.physicalAddress;
+
+      console.log(
+        `[Picking] Fail Cell Physical Address: (${x}, ${y}, ${z})`,
+        {
+          cell: result.cell,
+          worldPosition: result.worldPosition,
+          thinInstanceIndex: result.thinInstanceIndex,
+        },
+      );
+    });
 
     //this.boundaryRenderer = new BoundaryRenderer(this.scene);
     //this.boundaryRenderer.render();
@@ -280,6 +305,13 @@ export class SceneManager {
     };
   }
 
+
+  setFailCellPickedListener(
+    listener: FailCellPickedListener | null,
+  ) {
+    this.pickingManager.setListener(listener);
+  }
+
   getCamera() {
     return this.cameraController.getCamera();
   }
@@ -317,6 +349,8 @@ export class SceneManager {
   }
 
   dispose() {
+    this.pickingManager.dispose();
+
     //this.cameraGuideRenderer.dispose();
     this.voxelRenderer.dispose();
     //this.boundaryRenderer.dispose();

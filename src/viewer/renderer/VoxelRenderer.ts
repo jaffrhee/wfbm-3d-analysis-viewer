@@ -22,6 +22,8 @@ export class VoxelRenderer {
   private failMaterial: StandardMaterial | null = null;
   private referenceMesh: Mesh | null = null;
 
+  private renderedFailCells: CellData[] = [];
+
   constructor(scene: Scene) {
     this.scene = scene;
     this.createFailBaseMesh();
@@ -29,35 +31,35 @@ export class VoxelRenderer {
 
   // 기존 RenderFailCells() 메서드 제거 추후 원복 가능
   /*
-	renderFailCells(cells: CellData[]) {
+  renderFailCells(cells: CellData[]) {
 
-		if (!this.failBaseMesh) {
-			return;
-		}
+    if (!this.failBaseMesh) {
+      return;
+    }
 
-		const failCells = cells.filter(c => c.isFail);
+    const failCells = cells.filter(c => c.isFail);
 
-		const matrices = new Float32Array(16 * failCells.length);
+    const matrices = new Float32Array(16 * failCells.length);
 
-		failCells.forEach(
-			(cell, index) => {
+    failCells.forEach(
+      (cell, index) => {
 
-				const pos = CoordinateMapper.physicalToWorld(cell);
-				const matrix = Matrix.Translation(pos.x, pos.y, pos.z);
+        const pos = CoordinateMapper.physicalToWorld(cell);
+        const matrix = Matrix.Translation(pos.x, pos.y, pos.z);
 
-				matrix.copyToArray(matrices, index * 16);
-			}
-		);
+        matrix.copyToArray(matrices, index * 16);
+      }
+    );
 
-		this.failBaseMesh.thinInstanceSetBuffer(
-			"matrix",
-			matrices,
-			16
-		);
+    this.failBaseMesh.thinInstanceSetBuffer(
+      "matrix",
+      matrices,
+      16
+    );
 
-		this.failBaseMesh.thinInstanceRefreshBoundingInfo();
-	}
-	*/
+    this.failBaseMesh.thinInstanceRefreshBoundingInfo();
+  }
+  */
   renderFailCells(cells: CellData[]): FailCellRenderResult {
     const startTime = performance.now();
 
@@ -77,6 +79,9 @@ export class VoxelRenderer {
      * 넘기고 있으므로 그대로 사용하면 된다.
      */
     const failCells = cells;
+
+    // thinInstanceIndex must always resolve to the same CellData index.
+    this.renderedFailCells = [...failCells];
 
     const matrices = new Float32Array(16 * failCells.length);
 
@@ -149,6 +154,10 @@ export class VoxelRenderer {
       this.scene,
     );
 
+    // Thin Instance Picking 활성화
+    this.failBaseMesh.isPickable = true;
+    this.failBaseMesh.thinInstanceEnablePicking = true;
+
     this.failMaterial = new StandardMaterial("failCellMaterial", this.scene);
 
     this.failMaterial.diffuseColor = new Color3(1, 0.05, 0.08);
@@ -164,15 +173,42 @@ export class VoxelRenderer {
     this.failBaseMesh.edgesColor.set(1.0, 1.0, 1.0, 0.95);
   }
 
+  getFailBaseMesh(): Mesh | null {
+    return this.failBaseMesh;
+  }
+
+  getFailCellByThinInstanceIndex(
+    thinInstanceIndex: number,
+  ): CellData | null {
+    return this.renderedFailCells[thinInstanceIndex] ?? null;
+  }
+
+  getFailCellWorldPosition(
+    thinInstanceIndex: number,
+  ) {
+    const cell =
+      this.getFailCellByThinInstanceIndex(
+        thinInstanceIndex,
+      );
+
+    return cell
+      ? CoordinateMapper.physicalToWorld(cell)
+      : null;
+  }
+
   clearFailCells() {
     if (!this.failBaseMesh) {
       return;
     }
 
+    this.renderedFailCells = [];
+
     this.failBaseMesh.thinInstanceSetBuffer("matrix", new Float32Array(), 16);
   }
 
   dispose() {
+    this.renderedFailCells = [];
+
     if (this.failBaseMesh) {
       this.failBaseMesh.dispose();
       this.failBaseMesh = null;
