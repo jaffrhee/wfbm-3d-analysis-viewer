@@ -305,7 +305,12 @@ export default function ViewerLayout() {
           onChangePerformanceFailRate={(rate) => {
             setPerformanceFailRate(rate);
 
-            engineRef.current?.setPerformanceOptions(performanceEnabled, rate);
+            if (performanceEnabled) {
+              engineRef.current?.setPerformanceOptions(
+                performanceEnabled,
+                rate,
+              );
+            }
           }}
           onClose={() => setShowConfigDialog(false)}
         />
