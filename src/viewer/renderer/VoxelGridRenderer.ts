@@ -16,6 +16,7 @@ import {
   WFBM_SIZE_X,
   WFBM_SIZE_Y,
   WFBM_SIZE_Z,
+  CoordinateMapper,
 } from "../core/CoordinateMapper";
 
 const GRID_LABEL = {
@@ -211,7 +212,8 @@ export class VoxelGridRenderer {
 
     // horizontal layer lines
     for (let z = 0; z < WFBM_SIZE_Z; z += zMinorStep) {
-      const py = z * CELL_SPACING;
+      //const py = z * CELL_SPACING;
+      const py = CoordinateMapper.physicalZToWorldY(z);
       const line = [new Vector3(0, py, maxZ), new Vector3(maxX, py, maxZ)];
       (z % zMajorStep === 0 ? majorLines : minorLines).push(line);
     }
@@ -248,7 +250,8 @@ export class VoxelGridRenderer {
 
     // horizontal layer lines
     for (let z = 0; z < WFBM_SIZE_Z; z += zMinorStep) {
-      const py = z * CELL_SPACING;
+      //const py = z * CELL_SPACING;
+      const py = CoordinateMapper.physicalZToWorldY(z);      
       const line = [new Vector3(0, py, 0), new Vector3(0, py, maxZ)];
       (z % zMajorStep === 0 ? majorLines : minorLines).push(line);
     }
@@ -279,7 +282,8 @@ export class VoxelGridRenderer {
 
   /*private createLayerLabels(maxZ: number, labelStep: number) {
     for (let z = 0; z <= WFBM_SIZE_Z; z += labelStep) {
-      const py = z * CELL_SPACING;
+      const py = CoordinateMapper.physicalZToWorldY(z);    
+      //const py = z * CELL_SPACING;
 
       const anchor = MeshBuilder.CreateSphere(
         `layerLabelAnchor_${z}`,
@@ -342,7 +346,8 @@ export class VoxelGridRenderer {
 
   private createLayerLabels(labelStep: number) {
     for (let z = 0; z <= WFBM_SIZE_Z; z += labelStep) {
-      const py = z * CELL_SPACING;
+      //const py = z * CELL_SPACING;
+      const py = CoordinateMapper.physicalZToWorldY(z);
 
       this.createTextLabel(`layerLabel_${z}`, `${z}`, new Vector3(
         GRID_LABEL.layerPositionOffset.x,
