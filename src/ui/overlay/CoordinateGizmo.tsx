@@ -44,7 +44,7 @@ const GIZMO_STYLE = {
   orthoSize: 3.2,
 
   // Gizmo Position
-  axisYOffset: -0.8,
+  axisYOffset: 0.2,
 
   // Canvas
   canvasWidth: 180,

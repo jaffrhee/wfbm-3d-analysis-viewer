@@ -1,6 +1,6 @@
 import { Vector3 } from "@babylonjs/core";
 import type { CellData } from "../../data/CellData";
-import { PHYSICAL_AXIS } from "./AxisDefinition";
+//import { PHYSICAL_AXIS } from "./AxisDefinition";
 
 export const CELL_SPACING = 1.2;
 

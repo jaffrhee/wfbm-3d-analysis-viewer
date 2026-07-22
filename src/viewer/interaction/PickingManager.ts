@@ -9,6 +9,13 @@ import {
 import type { CellData } from "../../data/CellData";
 import type { VoxelRenderer } from "../renderer/VoxelRenderer";
 
+export interface PointerModifiers {
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
 export interface PickedFailCell {
   cell: CellData;
   physicalAddress: {
@@ -18,29 +25,31 @@ export interface PickedFailCell {
   };
   worldPosition: Vector3;
   thinInstanceIndex: number;
+  modifiers: PointerModifiers;
+}
+
+export interface PickedRelation {
+  relationId: string;
+  relationIndex: number;
+  modifiers: PointerModifiers;
 }
 
 export type FailCellPickedListener = (
   result: PickedFailCell,
 ) => void;
 
-/**
- * Resolves a Babylon thin-instance pick into a WFBM Fail Cell.
- *
- * Responsibilities are intentionally limited to:
- * - listening for a left-click pick
- * - confirming that the picked mesh is the Fail Cell base mesh
- * - resolving thinInstanceIndex -> CellData
- * - returning the Physical Address
- *
- * Selection/highlight/relation analysis are handled by later managers.
- */
+export type RelationPickedListener = (
+  result: PickedRelation,
+) => void;
+
+/** Resolves scene pointer picks into either a Fail Cell or a relation tube. */
 export class PickingManager {
   private readonly scene: Scene;
   private readonly voxelRenderer: VoxelRenderer;
 
   private pointerObserver: Observer<PointerInfo> | null = null;
-  private listener: FailCellPickedListener | null = null;
+  private failCellListener: FailCellPickedListener | null = null;
+  private relationListener: RelationPickedListener | null = null;
 
   constructor(
     scene: Scene,
@@ -52,38 +61,65 @@ export class PickingManager {
     this.pointerObserver =
       this.scene.onPointerObservable.add(
         this.handlePointer,
-        //PointerEventTypes.POINTERPICK,
         PointerEventTypes.POINTERDOWN,
       );
   }
 
   setListener(
     listener: FailCellPickedListener | null,
-  ) {
-    this.listener = listener;
+  ): void {
+    this.failCellListener = listener;
+  }
+
+  setRelationListener(
+    listener: RelationPickedListener | null,
+  ): void {
+    this.relationListener = listener;
   }
 
   private handlePointer = (
     pointerInfo: PointerInfo,
-  ) => {
-    console.log("[Picking] Pointer event detected");
+  ): void => {
     const pointerEvent = pointerInfo.event;
 
-    // STEP 1 supports only a normal left click.
     if (pointerEvent.button !== 0) {
       return;
     }
 
     const pickInfo = pointerInfo.pickInfo;
 
-    console.log("[Picking] Raw PickInfo", {
-      hit: pickInfo?.hit,
-      pickedMesh: pickInfo?.pickedMesh?.name,
-      thinInstanceIndex: pickInfo?.thinInstanceIndex,
-    });
-
-
     if (!pickInfo?.hit || !pickInfo.pickedMesh) {
+      return;
+    }
+
+    const modifiers: PointerModifiers = {
+      ctrlKey: pointerEvent.ctrlKey,
+      shiftKey: pointerEvent.shiftKey,
+      altKey: pointerEvent.altKey,
+      metaKey: pointerEvent.metaKey,
+    };
+
+    const metadata = pickInfo.pickedMesh.metadata as
+      | {
+          type?: string;
+          relationId?: string;
+          relationIndex?: number;
+        }
+      | null
+      | undefined;
+
+    if (
+      metadata?.type === "fail-cell-relation" &&
+      typeof metadata.relationId === "string"
+    ) {
+      this.relationListener?.({
+        relationId: metadata.relationId,
+        relationIndex:
+          typeof metadata.relationIndex === "number"
+            ? metadata.relationIndex
+            : -1,
+        modifiers,
+      });
       return;
     }
 
@@ -126,7 +162,7 @@ export class PickingManager {
       return;
     }
 
-    const result: PickedFailCell = {
+    this.failCellListener?.({
       cell,
       physicalAddress: {
         x: cell.physicalX,
@@ -135,12 +171,11 @@ export class PickingManager {
       },
       worldPosition,
       thinInstanceIndex,
-    };
-
-    this.listener?.(result);
+      modifiers,
+    });
   };
 
-  dispose() {
+  dispose(): void {
     if (this.pointerObserver) {
       this.scene.onPointerObservable.remove(
         this.pointerObserver,
@@ -149,6 +184,7 @@ export class PickingManager {
       this.pointerObserver = null;
     }
 
-    this.listener = null;
+    this.failCellListener = null;
+    this.relationListener = null;
   }
 }

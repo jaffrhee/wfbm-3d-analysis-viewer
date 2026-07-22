@@ -32,6 +32,9 @@ import {
 import { ChunkManager } from "../chunk/ChunkManager";
 import { ViewerEvents } from "./ViewerEvents";
 import { VoxelGridRenderer } from "../renderer/VoxelGridRenderer";
+import { RelationRenderer } from "../renderer/RelationRenderer";
+import { RelationHudRenderer } from "../renderer/RelationHudRenderer";
+import { LabelRenderer } from "../renderer/LabelRenderer";
 
 //import { CameraGuideRenderer } from "../renderer/CameraGuideRenderer";
 
@@ -40,6 +43,14 @@ import {
   PickingManager,
   type FailCellPickedListener,
 } from "../interaction/PickingManager";
+import {
+  SelectionManager,
+  type SelectionChangedListener,
+} from "../interaction/SelectionManager";
+import {
+  RelationAnalysisManager,
+  type RelationAnalysisChangedListener,
+} from "../interaction/RelationManager";
 
 export interface ViewerPerformanceInfo {
 
@@ -69,6 +80,14 @@ export class SceneManager {
   //private cameraGuideRenderer: CameraGuideRenderer;
   private chunkManager: ChunkManager;
   private pickingManager: PickingManager;
+  private selectionManager: SelectionManager;
+  private relationAnalysisManager: RelationAnalysisManager;
+  private relationRenderer: RelationRenderer;
+  private relationHudRenderer: RelationHudRenderer;
+  private physicalAddressLabelRenderer: LabelRenderer;
+
+  private failCellPickedListener: FailCellPickedListener | null = null;
+  private selectionChangedListener: SelectionChangedListener | null = null;
 
   private currentChunk: ChunkCoord = { x: 0, y: 0 };
 
@@ -116,6 +135,30 @@ export class SceneManager {
     this.voxelRenderer = new VoxelRenderer(this.scene);
     this.voxelRenderer.renderReferenceCell();
 
+    this.selectionManager = new SelectionManager(this.scene);
+    this.relationAnalysisManager =
+      new RelationAnalysisManager();
+    this.relationRenderer = new RelationRenderer(this.scene);
+    this.relationHudRenderer = new RelationHudRenderer(this.scene);
+    this.physicalAddressLabelRenderer = new LabelRenderer(this.scene);
+
+    this.selectionManager.setListener((selectedCells) => {
+      this.relationAnalysisManager.handleSelectionChanged(
+        selectedCells,
+      );
+
+      const relationResult =
+        this.relationAnalysisManager.getResult();
+
+      this.relationRenderer.render(relationResult);
+      this.physicalAddressLabelRenderer.render(selectedCells);
+
+      // A changed selection invalidates any previously opened relation HUD.
+      this.relationHudRenderer.clear();
+
+      this.selectionChangedListener?.(selectedCells);
+    });
+
     this.pickingManager = new PickingManager(
       this.scene,
       this.voxelRenderer,
@@ -124,7 +167,10 @@ export class SceneManager {
     // STEP 1 verification output.
     // A React HUD/selection effect will be connected in later steps.
     this.pickingManager.setListener((result) => {
-      const { x, y, z } = result.physicalAddress;
+      this.selectionManager.handlePickedFailCell(result);
+      this.failCellPickedListener?.(result);
+
+      /*const { x, y, z } = result.physicalAddress;
 
       console.log(
         `[Picking] Fail Cell Physical Address: (${x}, ${y}, ${z})`,
@@ -133,7 +179,28 @@ export class SceneManager {
           worldPosition: result.worldPosition,
           thinInstanceIndex: result.thinInstanceIndex,
         },
-      );
+      );*/
+    });
+
+    this.pickingManager.setRelationListener((result) => {
+      const multiSelectKey =
+        result.modifiers.ctrlKey || result.modifiers.metaKey;
+
+      if (!multiSelectKey) {
+        return;
+      }
+
+      const relation =
+        this.relationAnalysisManager
+          .getResult()
+          .relations
+          .find((item) => item.id === result.relationId);
+
+      if (!relation) {
+        return;
+      }
+
+      this.relationHudRenderer.show(relation);
     });
 
     //this.boundaryRenderer = new BoundaryRenderer(this.scene);
@@ -165,6 +232,8 @@ export class SceneManager {
     const chunk = this.chunkManager.getCurrentChunk();
 
     const loadStartTime = generationStartTime;
+
+    this.selectionManager.clearSelection();
 
     const renderResult = this.voxelRenderer.renderFailCells(chunk.failCells);
 
@@ -217,6 +286,8 @@ export class SceneManager {
     const chunk = this.chunkManager.switchChunk(coord);
 
     const dataGenerationMs = performance.now() - generationStartTime;
+
+    this.selectionManager.clearSelection();
 
     const renderResult = this.voxelRenderer.renderFailCells(chunk.failCells);
 
@@ -309,7 +380,36 @@ export class SceneManager {
   setFailCellPickedListener(
     listener: FailCellPickedListener | null,
   ) {
-    this.pickingManager.setListener(listener);
+    this.failCellPickedListener = listener;
+  }
+
+
+  setSelectionChangedListener(
+    listener: SelectionChangedListener | null,
+  ) {
+    this.selectionChangedListener = listener;
+
+    listener?.(
+      this.selectionManager.getSelectedCells(),
+    );
+  }
+
+  setRelationAnalysisChangedListener(
+    listener: RelationAnalysisChangedListener | null,
+  ) {
+    this.relationAnalysisManager.setListener(listener);
+  }
+
+  getRelationAnalysisResult() {
+    return this.relationAnalysisManager.getResult();
+  }
+
+  clearSelection() {
+    this.selectionManager.clearSelection();
+  }
+
+  getSelectedFailCells() {
+    return this.selectionManager.getSelectedCells();
   }
 
   getCamera() {
@@ -349,7 +449,14 @@ export class SceneManager {
   }
 
   dispose() {
+    this.failCellPickedListener = null;
+    this.selectionChangedListener = null;
+
     this.pickingManager.dispose();
+    this.relationHudRenderer.dispose();
+    this.relationRenderer.dispose();
+    this.relationAnalysisManager.dispose();
+    this.selectionManager.dispose();
 
     //this.cameraGuideRenderer.dispose();
     this.voxelRenderer.dispose();

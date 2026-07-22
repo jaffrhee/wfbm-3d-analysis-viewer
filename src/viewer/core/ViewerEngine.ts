@@ -3,6 +3,8 @@ import { SceneManager } from "./SceneManager";
 import { DebugManager } from "../debug/DebugManager";
 import type { ChunkGenerationOptions } from "../chunk/ChunkManager";
 import type { FailCellPickedListener } from "../interaction/PickingManager";
+import type { SelectionChangedListener } from "../interaction/SelectionManager";
+import type { RelationAnalysisChangedListener } from "../analysis/RelationAnalysisManager";
 
 export class ViewerEngine {
   private readonly engine: Engine;
@@ -52,6 +54,33 @@ export class ViewerEngine {
     this.sceneManager.setFailCellPickedListener(
       listener,
     );
+  }
+
+
+  setSelectionChangedListener(
+    listener: SelectionChangedListener | null,
+  ) {
+    this.sceneManager.setSelectionChangedListener(listener);
+  }
+
+  setRelationAnalysisChangedListener(
+    listener: RelationAnalysisChangedListener | null,
+  ) {
+    this.sceneManager.setRelationAnalysisChangedListener(
+      listener,
+    );
+  }
+
+  getRelationAnalysisResult() {
+    return this.sceneManager.getRelationAnalysisResult();
+  }
+
+  clearSelection() {
+    this.sceneManager.clearSelection();
+  }
+
+  getSelectedFailCells() {
+    return this.sceneManager.getSelectedFailCells();
   }
 
   getDebugInfo() {
