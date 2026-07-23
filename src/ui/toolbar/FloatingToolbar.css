@@ -1,71 +1,71 @@
 .floating-toolbar {
-    position: absolute;
+  position: absolute;
 
-    top: 20px;
-    left: 20px;
+  top: 20px;
+  left: 20px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-    padding: 10px;
+  padding: 10px;
 
-    border-radius: 12px;
+  border-radius: 12px;
 
-    background: rgba(20, 28, 38, 0.85);
-    border: 1px solid rgba(140, 220, 255, 0.25);
+  background: rgba(20, 28, 38, 0.85);
+  border: 1px solid rgba(140, 220, 255, 0.25);
 
-    backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 
-    z-index: 30;
+  z-index: 30;
 
-    pointer-events: auto;
+  pointer-events: auto;
 }
 
 .floating-toolbar button {
-    width: 48px;
-    height: 48px;
+  width: 48px;
+  height: 48px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    padding: 0;
+  padding: 0;
 
-    border: 1px solid rgba(180, 220, 255, 0.20);
-    border-radius: 8px;
+  border: 1px solid rgba(180, 220, 255, 0.20);
+  border-radius: 8px;
 
-    background: rgba(40, 52, 66, 0.92);
+  background: rgba(40, 52, 66, 0.92);
 
-    color: #E8F8FF;
+  color: #E8F8FF;
 
-    font-size: 13px;
-    font-weight: 600;
+  font-size: 13px;
+  font-weight: 600;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    transition:
-        background-color 0.15s,
-        border-color 0.15s,
-        transform 0.10s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    transform 0.10s;
 }
 
 .floating-toolbar button:hover {
-    background: rgba(55, 80, 110, 0.95);
+  background: rgba(55, 80, 110, 0.95);
 
-    border-color: rgba(140, 220, 255, 0.70);
+  border-color: rgba(140, 220, 255, 0.70);
 }
 
 .floating-toolbar button:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 .floating-toolbar button.active {
-    background: rgba(50, 120, 185, 0.95);
+  background: rgba(50, 120, 185, 0.95);
 
-    border-color: rgba(120, 230, 255, 0.90);
+  border-color: rgba(120, 230, 255, 0.90);
 
-    color: white;
+  color: white;
 }
 
 /*.floating-toolbar-icon {
@@ -75,22 +75,32 @@
 }*/
 
 .floating-toolbar-icon {
-    width: 28px;
-    height: 28px;
-    display: block;
+  width: 28px;
+  height: 28px;
+  display: block;
 
-    /*ilter: brightness(0) saturate(100%) invert(94%) sepia(9%) saturate(950%) hue-rotate(168deg) brightness(105%) contrast(103%);*/
-    filter: none;
-    opacity: 1;
+  /*ilter: brightness(0) saturate(100%) invert(94%) sepia(9%) saturate(950%) hue-rotate(168deg) brightness(105%) contrast(103%);*/
+  filter: none;
+  opacity: 1;
 
-    pointer-events: none;
-    user-select: none;
+  pointer-events: none;
+  user-select: none;
 }
 
 .floating-toolbar button:hover .floating-toolbar-icon {
-    transform: scale(1.08);
+  transform: scale(1.08);
 }
 
 .floating-toolbar button.active .floating-toolbar-icon {
-    transform: scale(1.12);
+  transform: scale(1.12);
+}
+
+.floating-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.floating-toolbar button:disabled:hover {
+  background: rgba(40, 52, 66, 0.92);
+  border-color: rgba(180, 220, 255, 0.20);
 }

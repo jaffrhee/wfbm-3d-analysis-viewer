@@ -85,6 +85,8 @@ export default function ViewerLayout() {
     initialSettings.performance.failRate,
   );
 
+  const [selectedCount, setSelectedCount] = useState(0);
+
   const handleSelectChunk = useCallback((coord: ChunkCoord) => {
     engineRef.current?.loadChunk(coord.x, coord.y);
     setCurrentChunk(coord);
@@ -108,6 +110,10 @@ export default function ViewerLayout() {
       performanceFailRate,
     });
     engineRef.current = viewerEngine;
+
+    viewerEngine.setSelectionChangedListener((cells) => {
+      setSelectedCount(cells.length);
+    });
 
     setMainCamera(viewerEngine.getCamera());
     setMouseWheelSpeed(viewerEngine.getCameraController().getMouseWheelSpeed());
@@ -204,6 +210,10 @@ export default function ViewerLayout() {
         onHome={() => engineRef.current?.getCameraController().home()}
         onToggleNavigationPad={() => setShowNavigationPad((v) => !v)}
         onShowConfig={() => setShowConfigDialog(true)}
+        canClearSelection={selectedCount > 0}
+        onClearSelection={() => {
+          engineRef.current?.clearSelection();
+        }}
       />
 
       {showNavigationPad && (

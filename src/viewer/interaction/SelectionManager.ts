@@ -46,16 +46,29 @@ export class SelectionManager {
     const multiSelectKey =
       result.modifiers.ctrlKey || result.modifiers.metaKey;
 
+    const relationMode = this.selectedCells.size >= 2;
+
+    // Ctrl + Shift + Left Click
+    // Relation 선택에서 해당 셀 제거  
     if (multiSelectKey && result.modifiers.shiftKey) {
       this.removeSelection(result);
       return;
     }
 
+    // Ctrl + Left Click
+    // Relation 선택에 셀 추가
     if (multiSelectKey) {
       this.addSelection(result);
       return;
     }
 
+    // Relation Analysis 활성 상태에서는
+    // 일반 Left Click을 완전히 무시한다.
+    if (relationMode) {
+      return;
+    }
+
+    // 선택이 0개 또는 1개일 때만 단일 선택 허용
     this.replaceSelection(result);
   }
 

@@ -152,9 +152,33 @@ export class RelationHudRenderer {
     context.textBaseline = "middle";
 
     const rows: Array<[string, string]> = [
-      ["ΔX", this.formatSigned(relation.deltaX)],
-      ["ΔY", this.formatSigned(relation.deltaY)],
-      ["ΔZ", this.formatSigned(relation.deltaZ)],
+      //["ΔX", this.formatSigned(relation.deltaX)],
+      //["ΔY", this.formatSigned(relation.deltaY)],
+      //["ΔZ", this.formatSigned(relation.deltaZ)],
+      [
+        "ΔX",
+        `${this.formatSigned(relation.deltaX)} ${this.getDirectionArrow(
+          relation.deltaX,
+          "→",
+          "←",
+        )}`,
+      ],
+      [
+        "ΔY",
+        `${this.formatSigned(relation.deltaY)} ${this.getDirectionArrow(
+          relation.deltaY,
+          "↑",
+          "↓",
+        )}`,
+      ],
+      [
+        "ΔZ",
+        `${this.formatSigned(relation.deltaZ)} ${this.getDirectionArrow(
+          relation.deltaZ,
+          "⬆",
+          "⬇",
+        )}`,
+      ],
     ];
 
     let y = 62;
@@ -221,5 +245,15 @@ export class RelationHudRenderer {
     }
 
     return `${value}`;
+  }
+
+  private getDirectionArrow(
+    value: number,
+    positive: string,
+    negative: string,
+  ): string {
+    if (value > 0) return positive;
+    if (value < 0) return negative;
+    return "•";
   }
 }

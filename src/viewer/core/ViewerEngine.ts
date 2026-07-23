@@ -4,7 +4,7 @@ import { DebugManager } from "../debug/DebugManager";
 import type { ChunkGenerationOptions } from "../chunk/ChunkManager";
 import type { FailCellPickedListener } from "../interaction/PickingManager";
 import type { SelectionChangedListener } from "../interaction/SelectionManager";
-import type { RelationAnalysisChangedListener } from "../analysis/RelationAnalysisManager";
+import type { RelationChangedListener } from "../interaction/RelationManager";
 
 export class ViewerEngine {
   private readonly engine: Engine;
@@ -64,7 +64,7 @@ export class ViewerEngine {
   }
 
   setRelationAnalysisChangedListener(
-    listener: RelationAnalysisChangedListener | null,
+    listener: RelationChangedListener | null,
   ) {
     this.sceneManager.setRelationAnalysisChangedListener(
       listener,

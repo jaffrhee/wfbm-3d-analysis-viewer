@@ -49,7 +49,7 @@ import {
 } from "../interaction/SelectionManager";
 import {
   RelationAnalysisManager,
-  type RelationAnalysisChangedListener,
+  type RelationChangedListener,
 } from "../interaction/RelationManager";
 
 export interface ViewerPerformanceInfo {
@@ -395,7 +395,7 @@ export class SceneManager {
   }
 
   setRelationAnalysisChangedListener(
-    listener: RelationAnalysisChangedListener | null,
+    listener: RelationChangedListener | null,
   ) {
     this.relationAnalysisManager.setListener(listener);
   }

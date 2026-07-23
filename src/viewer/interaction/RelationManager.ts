@@ -47,7 +47,7 @@ export interface RelationAnalysisResult {
   relations: readonly RelationInfo[];
 }
 
-export type RelationAnalysisChangedListener = (
+export type RelationChangedListener = (
   result: RelationAnalysisResult,
 ) => void;
 
@@ -64,7 +64,7 @@ const DEFAULT_THRESHOLDS: RelationDistanceThresholds = {
  * materials and HUDs are intentionally owned by dedicated renderers.
  */
 export class RelationAnalysisManager {
-  private listener: RelationAnalysisChangedListener | null = null;
+  private listener: RelationChangedListener | null = null;
   private mode: RelationMode;
   private thresholds: RelationDistanceThresholds;
 
@@ -123,7 +123,7 @@ export class RelationAnalysisManager {
   }
 
   setListener(
-    listener: RelationAnalysisChangedListener | null,
+    listener: RelationChangedListener | null,
   ): void {
     this.listener = listener;
     listener?.(this.getResult());
